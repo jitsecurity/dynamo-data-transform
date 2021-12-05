@@ -1,0 +1,23 @@
+{
+  "name": "@jitsecurity/sls-dynamodb-data-migrations",
+  "version": "1.0.3",
+  "description": "Serverless plugin for DynamoDB data migrations",
+  "main": "sls-plugin.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jitsecurity/sls-dynamodb-data-migrations.git"
+  },
+  "author": "Guy Braunstain <guy@jit.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jitsecurity/sls-dynamodb-data-migrations/issues"
+  },
+  "homepage": "https://github.com/jitsecurity/sls-dynamodb-data-migrations#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "async": "^3.2.2",
+    "csv-parse": "^5.0.3"
+  }
+}
