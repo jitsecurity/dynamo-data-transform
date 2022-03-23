@@ -16,14 +16,13 @@ const up = async (provider, options) => {
   console.info(`Available tables for migration ${tables || 'No tables found'}.`)
 
   return await Promise.all(tables.map(async (table) => {
-    console.info(`Getting latest batch of migration for table ${table}.`)
+    console.info(`Getting latest batch of migration for table ${table}.`);
     const latestBatch = await getLatestBatch(ddb, table);
-    const batch = latestBatch ? latestBatch.batchNumber + 1 : 1
-    const migrationsToExecute = await getMigrationsForCurrentTable(table, latestBatch)
+    const migrationsToExecute = await getMigrationsForCurrentTable(table, latestBatch);
 
     for (const migration of migrationsToExecute) {
-      console.info('Started migration ', migration.sequence, table)
-      await migrate(ddb, batch, migration, table, stage, kms, isDryRun)
+      console.info('Started migration ', migration.sequence, table);
+      await migrate(ddb, migration, table, stage, kms, isDryRun);
     }
   }))
 }
@@ -39,7 +38,8 @@ const getMigrationsForCurrentTable = async (table, latestBatch) => {
     const sortedMigrations = jsFiles
       .map((fileName) => require(`${baseMigrationsFolderPath}/${table}/${fileName}`))
       .sort((a, b) => a.sequence - b.sequence)
-    const filteredMigrationsByNextSequence = sortedMigrations.filter(m => m.sequence === nextSequence)
+
+    const filteredMigrationsByNextSequence = sortedMigrations.filter(m => m.sequence >= nextSequence)
 
     console.debug(`Number of migration files to execute - ${filteredMigrationsByNextSequence.length} for table ${table}.`)
     return filteredMigrationsByNextSequence
@@ -50,7 +50,7 @@ const getMigrationsForCurrentTable = async (table, latestBatch) => {
 
 }
 
-const migrate = async (ddb, batch, migration, table, stage, kms, isDryRun) => {
+const migrate = async (ddb, migration, table, stage, kms, isDryRun) => {
   const { sequence, transformUp, prepare } = migration
   const isMigrationRun = await hasMigrationRun(ddb, sequence, table)
   const env = process.env.ENV_NAME || stage
@@ -67,6 +67,8 @@ const migrate = async (ddb, batch, migration, table, stage, kms, isDryRun) => {
 
     await transformUp(ddb, preparationData, isDryRun)
     if (!isDryRun) {
+      // TODO: add support for batches, currently only one migration per batch is supported
+      const batch = sequence;
       await setMigrationIsRun(ddb, batch, sequence, table)
     } else {
       console.info(`It's a dry run`, isDryRun)

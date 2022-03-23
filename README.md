@@ -150,7 +150,7 @@ To be continued
 const transformUp = async (ddb, preparationData, isDryRun) => {
   let lastEvalKey
   do {
-    const { Items, LastEvaluatedKey } = await getItems(ddb)
+    const { Items, LastEvaluatedKey } = await getItems(ddb, lastEvalKey)
     lastEvalKey = LastEvaluatedKey
 
     const updatedItems = await Promise.all(Items.map(async (item) => {
@@ -174,7 +174,7 @@ const transformUp = async (ddb, preparationData, isDryRun) => {
 const transformDown = async (ddb, isDryRun) => {
   let lastEvalKey
   do {
-    const { Items, LastEvaluatedKey } = await getItems(ddb)
+    const { Items, LastEvaluatedKey } = await getItems(ddb, lastEvalKey)
     lastEvalKey = LastEvaluatedKey
 
     const updatedItems = await Promise.all(Items.map(async (item) => {

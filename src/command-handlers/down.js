@@ -2,7 +2,7 @@
 const { getLatestBatch, removeSequenceFromBatch } = require('../services/dynamodb');
 
 const down = async (provider, options) => {
-  const { table, mVersion, dry: isDryRun } = options
+  const { table, dry: isDryRun } = options
 
   const ddb = new provider.sdk.DynamoDB.DocumentClient()
 
@@ -13,14 +13,14 @@ const down = async (provider, options) => {
   }
 
   const lastSequence = latestBatch.sequences.sort().reverse()[0];
-  const { transformDown } = require(`${process.cwd()}/migrations/${table}/${mVersion}.js`);
-  await transformDown(ddb, isDryRun)
+  const { transformDown } = require(`${process.cwd()}/migrations/${table}/v${lastSequence}.js`);
+  await transformDown(ddb, isDryRun);
 
   if (!isDryRun) {
     await removeSequenceFromBatch(ddb, latestBatch.batchNumber, lastSequence, table);
   } else {
-    console.info(`It's a dry run`, isDryRun)
-  }
-}
+    console.info(`It's a dry run`, isDryRun);
+  };
+};
 
-module.exports = down
+module.exports = down;

@@ -57,12 +57,6 @@ module.exports = {
             required: true,
             type: 'string',
           },
-          mVersion: {
-            usage: 'Specify the version of current migration (e.g. "--mVersion v1")',
-            shortcut: 'mv',
-            required: true,
-            type: 'string',
-          },
           dry: {
             usage: '--dry',
             shortcut: 'd',

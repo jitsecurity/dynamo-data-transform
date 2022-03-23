@@ -1,32 +1,26 @@
 const MIGRATION_ITEM_KEY = {
   PK: 'Migrations',
   SK: 'Migrations',
-}
+};
 
 const hasMigrationRun = async (ddb, sequence, table) => {
-  const { Item } = await ddb.get({
-    TableName: table,
-    Key: MIGRATION_ITEM_KEY,
-  }).promise();
+  const migrationRecord = await getMigrationRecord(ddb, table);
 
-  const isSequenceExecutedInSomeBatch = Item && Object
-    .values(Item.Batches)
-    .reduce((acc, val) => acc.concat(val), []).includes(sequence)
+  const isSequenceExecutedInSomeBatch = migrationRecord && Object
+    .values(migrationRecord.Batches)
+    .reduce((acc, val) => acc.concat(val), []).includes(sequence);
 
-  return isSequenceExecutedInSomeBatch
-}
+  return isSequenceExecutedInSomeBatch;
+};
 
 const setMigrationIsRun = async (ddb, batchNumber, sequence, table) => {
-  const { Item } = await ddb.get({
-    TableName: table,
-    Key: MIGRATION_ITEM_KEY,
-  }).promise()
-  const existingBatches = Item ? Item.Batches : {}
-  const batchToUpdate = existingBatches[batchNumber] || []
-  const migrationsRunHistory = Item ? Item.MigrationsRunHistory : {}
-  batchToUpdate.push(sequence)
+  const migrationRecord = await getMigrationRecord(ddb, table);
+  const existingBatches = migrationRecord ? migrationRecord.Batches : {};
+  const batchToUpdate = existingBatches[batchNumber] || [];
+  const migrationsRunHistory = migrationRecord ? migrationRecord.MigrationsRunHistory : {};
+  batchToUpdate.push(sequence);
   const updatedItem = {
-    ...Item,
+    ...migrationRecord,
     ...MIGRATION_ITEM_KEY,
     Batches: {
       ...existingBatches,
@@ -40,24 +34,21 @@ const setMigrationIsRun = async (ddb, batchNumber, sequence, table) => {
         executedCommand: 'up'
       }
     }
-  }
+  };
   await ddb.put({
     TableName: table,
     Item: updatedItem,
-  }).promise()
-}
+  }).promise();
+};
 
 const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
-  const { Item } = await ddb.get({
-    TableName: table,
-    Key: MIGRATION_ITEM_KEY,
-  }).promise()
-  if (!Item) {
+  const migrationRecord = await getMigrationRecord(ddb, table);
+  if (!migrationRecord) {
     return
   }
-  const sequences = Item.Batches[`${batchNumber}`]
+  const sequences = migrationRecord.Batches[`${batchNumber}`]
   const index = sequences.indexOf(sequence)
-  const migrationsRunHistory = Item ? Item.MigrationsRunHistory : {}
+  const migrationsRunHistory = migrationRecord ? migrationRecord.MigrationsRunHistory : {}
 
   let batches
 
@@ -65,18 +56,18 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
     sequences.splice(index, 1)
   }
   if (!sequences.length) {
-    const currentBatches = Item.Batches
+    const currentBatches = migrationRecord.Batches
     delete currentBatches[`${batchNumber}`]
     batches = currentBatches
   } else {
     batches = {
-      ...Item.Batches,
+      ...migrationRecord.Batches,
       [batchNumber]: sequences,
     }
   }
 
   updatedItem = {
-    ...Item,
+    ...migrationRecord,
     ...MIGRATION_ITEM_KEY,
     Batches: batches,
     MigrationsRunHistory: {
@@ -95,67 +86,73 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
   }).promise()
 }
 
-const getLatestBatch = async (ddb, table) => {
+const getMigrationRecord = async (ddb, table) => {
   try {
-    const response = await ddb.get({
+    const { Item } = await ddb.get({
       TableName: table,
       Key: MIGRATION_ITEM_KEY,
-    }).promise()
+    }).promise();
 
-    const { Item } = response
+    if (!Item) console.info(`No migration record for table ${table}`);
+    return Item;
+    
+  } catch (error) {
+    console.error(`Could not get migration record for table ${table}`, error);
+  }
+}
 
-    if (!Item) {
-      console.info('No latest batch')
-      return
+const getLatestBatch = async (ddb, table) => {
+  try {
+    const migrationRecord = await getMigrationRecord(ddb, table);
+
+    if (!migrationRecord) {
+      console.info('No latest batch');
+      return;
     }
-    const batches = Object.keys(Item.Batches)
+    const batches = Object.keys(migrationRecord.Batches)
       .map((batchNumber) => parseInt(batchNumber, 10))
       .sort()
-      .reverse()
-    const latestBatchNumber = batches[0]
+      .reverse();
+    const latestBatchNumber = batches[0];
     if (!latestBatchNumber) {
       console.info('No latestBatchNumber')
-      return
+      return;
     }
     return {
       batchNumber: latestBatchNumber,
-      sequences: Item.Batches[latestBatchNumber],
-    }
+      sequences: migrationRecord.Batches[latestBatchNumber],
+    };
   } catch (error) {
     console.error(
       `An error has occured while trying to get latest batch for table ${table}`,
       error
-    )
-    return
+    );
+    return;
   }
-}
+};
 
 const removeBatch = async (ddb, batch, table) => {
-  const { Item } = await ddb.get({
-    TableName: table,
-    Key: MIGRATION_ITEM_KEY,
-  }).promise()
+  const migrationRecord = await getMigrationRecord(ddb, table);
 
-  if (!Item) {
-    return
-  }
+  if (!migrationRecord) return;
 
-  const currentBatches = Item.Batches
-  delete currentBatches[`${batch}`]
+  const currentBatches = migrationRecord.Batches;
+  delete currentBatches[`${batch}`];
   const updatedItem = {
-    ...Item,
+    ...migrationRecord,
     ...MIGRATION_ITEM_KEY,
     Batches: currentBatches
-  }
+  };
 
   await ddb.put({
     TableName: table,
     Item: updatedItem,
-  }).promise()
-}
+  }).promise();
+};
 
 module.exports = {
   getLatestBatch,
+  getMigrationRecord,
   removeBatch,
   removeSequenceFromBatch,
   setMigrationIsRun,

@@ -1,6 +1,6 @@
 {
   "name": "@jitsecurity/sls-dynamodb-data-migrations",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Serverless plugin for DynamoDB data migrations",
   "main": "sls-plugin.js",
   "repository": {
@@ -16,8 +16,5 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "devDependencies": {
-    "async": "^3.2.2",
-    "csv-parse": "^5.0.3"
-  }
+  "devDependencies": {}
 }
