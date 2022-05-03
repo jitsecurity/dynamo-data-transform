@@ -1,18 +1,18 @@
 const prepare = async (ddb) => {
-
+  //Implement your preparation logic here
 }
 
 const up = async (item, prepationDataForItem) => {
-
+  //Implement your transform logic for specific item here
 }
 
 const down = (item) => {
-
+  //Implement your transform logic for specific item here
 }
 
 const getItems = async (ddb, lastEvalKey) => {
   return await ddb.scan({
-    TableName: 'ENTER_YOUR_TABLE_NAME',
+    TableName: '{{YOUR_TABLE_NAME}}',
     FilterExpression: 'begins_with(#sk, :sk_prefix)',
     ExclusiveStartKey: lastEvalKey,
     ExpressionAttributeNames: {
@@ -66,7 +66,7 @@ const transformDown = async (ddb, isDryRun) => {
 const save = async (ddb, items) => {
   return await Promise.all(items.map((item) =>
     ddb.put({
-      TableName: 'ENTER_YOUR_TABLE_NAME',
+      TableName: '{{YOUR_TABLE_NAME}}',
       Item: item,
     }).promise()
   ))
