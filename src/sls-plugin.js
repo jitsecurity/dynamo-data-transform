@@ -1,10 +1,9 @@
-const init = require('./command-handlers/init')
-const up = require('./command-handlers/up')
-const prepare = require('./command-handlers/prepare')
-const down = require('./command-handlers/down')
+const { init, up, down, prepare, history: getHistory } = require('./command-handlers')
 const commands = require('./config/commands')
+const utils = require('./utils')
 
 class ServerlessDynamoMigrations {
+  static utils = utils
   constructor(serverless, options) {
     this.serverless = serverless
     this.provider = serverless.getProvider('aws')
@@ -21,11 +20,23 @@ class ServerlessDynamoMigrations {
       'migration:prepare:prepare': this.prepare.bind(this),
       'migration:up:migrate': this.up.bind(this),
       'migration:down:rollback': this.rollback.bind(this),
+      'migration:history:history': this.getHistory.bind(this),
     }
   }
 
   async init() {
-    return init(this.provider, this.options).then(() => {
+    const getTableNames = (resources) => { // TODO: Move this function to a more appropriate place
+      return Object.values(resources).filter((rValue) => {
+        return rValue.Type === 'AWS::DynamoDB::Table'
+      }).map((rValue) => {
+        return rValue.Properties.TableName
+      })
+    }
+
+    const resources = this.provider.serverless.service.resources.Resources
+    const tableNames = getTableNames(resources)
+
+    return init({ tableNames }).then(() => {
       console.info('"init" command ran successfully.');
     }).catch((error) => {
       console.error(error, 'An error has occured while running migration (init).')
@@ -33,7 +44,7 @@ class ServerlessDynamoMigrations {
   }
 
   async prepare() {
-    return prepare(this.provider, this.options).then(() => {
+    return prepare(this.options).then(() => {
       console.info('"prepare" command ran successfully.');
     }).catch((error) => {
       console.error(error, 'An error has occured while preparing data for migration.')
@@ -41,7 +52,7 @@ class ServerlessDynamoMigrations {
   }
 
   async up() {
-    return up(this.provider, this.options).then(() => {
+    return up(this.options).then(() => {
       console.info('"up" command ran successfully.');
     }).catch((error) => {
       console.error(error, 'An error has occured while running migration (up).')
@@ -50,7 +61,15 @@ class ServerlessDynamoMigrations {
   }
 
   async rollback() {
-    return down(this.provider, this.options).then(() => {
+    return down(this.options).then(() => {
+      console.info('"down" command run successfully.');
+    }).catch((error) => {
+      console.error(error, 'An error has occured while running migration (down).')
+    })
+  }
+
+  async getHistory() {
+    return getHistory(this.options).then(() => {
       console.info('"down" command run successfully.');
     }).catch((error) => {
       console.error(error, 'An error has occured while running migration (down).')

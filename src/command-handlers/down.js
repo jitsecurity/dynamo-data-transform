@@ -1,10 +1,8 @@
+const { getDynamoDBClient } = require('../clients');
+const { getLatestBatch, removeSequenceFromBatch } = require('../services/dynamodb'); // rename folder
 
-const { getLatestBatch, removeSequenceFromBatch } = require('../services/dynamodb');
-
-const down = async (provider, options) => {
-  const { table, dry: isDryRun } = options
-
-  const ddb = new provider.sdk.DynamoDB.DocumentClient()
+const down = async ({ table, dry: isDryRun }) => {
+  const ddb = getDynamoDBClient();
 
   const latestBatch = await getLatestBatch(ddb, table);
   if (!latestBatch) {

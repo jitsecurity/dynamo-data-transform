@@ -1,12 +1,16 @@
 const fs = require('fs').promises
 const { getEncryptedData } = require('../services/aws-kms')
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
+const { KMSClient } = require("@aws-sdk/client-kms");
 
-const prepareHandler = async (provider, options) => {
+const prepareHandler = async (options) => {
   const { preparationPath, stage, mVersion, dry: isDryRun } = options
   const { prepare } = require(preparationPath)
-
-  const ddb = new provider.sdk.DynamoDB.DocumentClient()
-  const kms = new provider.sdk.KMS()
+  
+  const client = new DynamoDBClient();
+  const ddb = DynamoDBDocumentClient.from(client);
+  const kms = new KMSClient()
   const env = process.env.ENV_NAME || stage
 
   const pathItems = preparationPath.split('/')

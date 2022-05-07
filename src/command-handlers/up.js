@@ -1,16 +1,21 @@
+// #!/usr/bin/env node
+
+// console.log('4')
+
 const fs = require('fs').promises
 const { getDecryptedData } = require('../services/aws-kms')
-const { getLatestBatch, hasMigrationRun, setMigrationIsRun } = require('../services/dynamodb/migrations-executions-manager')
+const { getLatestBatch, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager')
+const { KMSClient } = require("@aws-sdk/client-kms");
+const { getDynamoDBClient } = require('../clients');
+
 
 const MIGRATIONS_FOLDER_NAME = 'migrations'
 
 const baseMigrationsFolderPath = `${process.cwd()}/${MIGRATIONS_FOLDER_NAME}`
 
-const up = async (provider, options) => {
-  const { stage, dry: isDryRun } = options
-
-  const ddb = new provider.sdk.DynamoDB.DocumentClient()
-  const kms = new provider.sdk.KMS()
+const up = async ({ stage, dry: isDryRun }) => {
+  const ddb = getDynamoDBClient()
+  const kms = new KMSClient()
 
   const tables = await fs.readdir(baseMigrationsFolderPath);
   console.info(`Available tables for migration ${tables || 'No tables found'}.`)
@@ -61,15 +66,14 @@ const migrate = async (ddb, migration, table, stage, kms, isDryRun) => {
     if (shouldUsePreparationData) {
       const encryptedPreparationData = await fs.readFile(`${baseMigrationsFolderPath}/${table}/v${sequence}.${env}.encrypted`)
       preparationData = await getDecryptedData(kms, encryptedPreparationData)
-    } else {
-      console.info(`Migrating without preparation data - no prepare function supplied`)
+      console.info(`Migrating using preparation data`)
     }
 
-    await transformUp(ddb, preparationData, isDryRun)
+    const transformationResponse = await transformUp(ddb, preparationData, isDryRun)
     if (!isDryRun) {
       // TODO: add support for batches, currently only one migration per batch is supported
       const batch = sequence;
-      await setMigrationIsRun(ddb, batch, sequence, table)
+      await syncMigrationRecord(ddb, batch, sequence, table, transformationResponse?.transformed)
     } else {
       console.info(`It's a dry run`, isDryRun)
     }

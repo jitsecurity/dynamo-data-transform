@@ -13,19 +13,11 @@ const createFolderIfNotExist = (folderPath) => {
   }
 }
 
-const getTableNames = (resources) => {
-  return Object.keys(resources).filter((rValue) => {
-    return resources[rValue].Type === 'AWS::DynamoDB::Table'
-  })
-}
 
-const initHandler = async (provider, options) => {
+const initHandler = async ({ tableNames }) => {
   const baseMigrationsFolderPath = `${process.cwd()}/${MIGRATIONS_FOLDER_NAME}`
-  const resources = provider.serverless.service.resources.Resources
 
   createFolderIfNotExist(baseMigrationsFolderPath)
-
-  const tableNames = getTableNames(resources)
 
   tableNames.forEach(tableName => {
     const isExist = createFolderIfNotExist(`${baseMigrationsFolderPath}/${tableName}`)

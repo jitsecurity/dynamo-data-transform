@@ -65,7 +65,25 @@ module.exports = {
           }
         }
       },
-
+      history: {
+        usage: "sls migration history -t {{YOUR_TABLE}} - Show the history of migrations",
+        lifecycleEvents: ["history"],
+        options: {
+          table: {
+            usage: 'Specify the name of the table (e.g. "--table TABLE_NAME")',
+            shortcut: 't',
+            required: true,
+            type: 'string',
+          },
+          format: {
+            usage: 'Specify the format of the history (e.g "--format json | table | csv")',
+            shortcut: 'f',
+            required: false,
+            type: 'string',
+            default: 'json'
+          }
+        }
+      }
     }
   }
 }

@@ -1,3 +1,5 @@
+const { ListKeysCommand, DescribeKeyCommand, DecryptCommand, EncryptCommand } = require("@aws-sdk/client-kms");
+
 // We want to use only one key for every stage
 // This is the description of the key in dev,staging,prod
 // Should be replaced somewhen with appropriate alias/description
@@ -7,9 +9,9 @@ const getMigrationsKMSKey = async (kms) => {
     let migrationsKmsKeyId = null
 
     try {
-        const { Keys } = await kms.listKeys().promise()
+        const { Keys } = await kms.send(new ListKeysCommand({}))
         await Promise.all(Keys.map(async (key) => {
-            const { KeyMetadata } = await kms.describeKey({ KeyId: key.KeyId }).promise()
+            const { KeyMetadata } = await kms.send(new DescribeKeyCommand({ KeyId: key.KeyId }))
             const { KeyId, Description } = KeyMetadata
             if (!migrationsKmsKeyId) {
                 migrationsKmsKeyId = Description === KMS_KEY_DESCRIPTION ? KeyId : null
@@ -17,8 +19,8 @@ const getMigrationsKMSKey = async (kms) => {
         }))
 
     } catch (error) {
-        console.error('Could not get migrations kms key')
-        throw error
+        console.error('Could not get migrations kms key', error);
+        throw error;
     }
 
     if (migrationsKmsKeyId) {
@@ -36,15 +38,13 @@ const getMigrationsKMSKey = async (kms) => {
 const getDecryptedData = async (kms, encryptedData) => {
     try {
         const migrationsKmsKeyId = await getMigrationsKMSKey(kms)
-        const { Plaintext } = await kms.decrypt({
+        const { Plaintext } = await kms.send(new DecryptCommand({
             CiphertextBlob: encryptedData,
             KeyId: migrationsKmsKeyId,
             EncryptionAlgorithm: 'SYMMETRIC_DEFAULT',
-        }).promise()
+        }))
 
-        const decryptedData = JSON.parse(Plaintext.toString('utf8'))
-        console.log(decryptedData, 'decrypted')
-
+        const decryptedData = JSON.parse((new TextDecoder()).decode(Plaintext));
         return decryptedData
     } catch (error) {
         console.error(`Could not get decrypted data`, error)
@@ -57,12 +57,12 @@ const getEncryptedData = async (kms, data) => {
     try {
         const migrationsKmsKeyId = await getMigrationsKMSKey(kms)
 
-        var params = {
+        const encryptCommand = new EncryptCommand({
             KeyId: migrationsKmsKeyId,
             Plaintext: Buffer.from(JSON.stringify(data)),
             EncryptionAlgorithm: 'SYMMETRIC_DEFAULT',
-        };
-        const { CiphertextBlob } = await kms.encrypt(params).promise()
+        });
+        const { CiphertextBlob } = await kms.send(encryptCommand)
         return CiphertextBlob
     } catch (error) {
         console.error(`Could not get encrypted data for:`, data, error)
