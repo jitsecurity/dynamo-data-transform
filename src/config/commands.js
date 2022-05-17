@@ -1,26 +1,26 @@
 module.exports = {
   migration: {
-    usage: "Runs database migrations",
+    usage: 'Runs database migrations',
     commands: {
       init: {
-        usage: "sls migration init - Create a migrations folder with tables and initialized scripts",
-        lifecycleEvents: ["init"],
+        usage: 'sls migration init - Create a migrations folder with tables and initialized scripts',
+        lifecycleEvents: ['init'],
       },
       up: {
-        usage: "sls migration up --stage local - Runs the next migration",
-        lifecycleEvents: ["migrate"],
+        usage: 'sls migration up --stage local - Runs the next migration',
+        lifecycleEvents: ['migrate'],
         options: {
           dry: {
             usage: '--dry',
             shortcut: 'd',
             required: false,
-            type: 'boolean'
-          }
-        }
+            type: 'boolean',
+          },
+        },
       },
       prepare: {
-        usage: "sls migration prepare -p $(pwd)/migrations/{{YOUR_TABLE}}/v1.js --mVersion v1 - Prepare data for migration pass full path of the prepatation script",
-        lifecycleEvents: ["prepare"],
+        usage: 'sls migration prepare -p $(pwd)/migrations/{{YOUR_TABLE}}/v1.js --mVersion v1 - Prepare data for migration pass full path of the prepatation script',
+        lifecycleEvents: ['prepare'],
         options: {
           preparationPath: {
             usage: 'Specify the path of the preparation function \n (e.g. "--preparationPath /Users/Guy/a-service/migrations/v1.js")',
@@ -43,13 +43,13 @@ module.exports = {
             usage: '--dry',
             shortcut: 'd',
             required: false,
-            type: 'boolean'
-          }
-        }
+            type: 'boolean',
+          },
+        },
       },
       down: {
-        usage: "Rolls back a specific migration",
-        lifecycleEvents: ["rollback"],
+        usage: 'Rolls back a specific migration',
+        lifecycleEvents: ['rollback'],
         options: {
           table: {
             usage: 'Specify the name of the table (e.g. "--table TABLE_NAME")',
@@ -61,13 +61,13 @@ module.exports = {
             usage: '--dry',
             shortcut: 'd',
             required: false,
-            type: 'boolean'
-          }
-        }
+            type: 'boolean',
+          },
+        },
       },
       history: {
-        usage: "sls migration history -t {{YOUR_TABLE}} - Show the history of migrations",
-        lifecycleEvents: ["history"],
+        usage: 'sls migration history -t {{YOUR_TABLE}} - Show the history of migrations',
+        lifecycleEvents: ['history'],
         options: {
           table: {
             usage: 'Specify the name of the table (e.g. "--table TABLE_NAME")',
@@ -75,15 +75,15 @@ module.exports = {
             required: true,
             type: 'string',
           },
-          format: {
+          format: { // TODO: add support for that
             usage: 'Specify the format of the history (e.g "--format json | table | csv")',
             shortcut: 'f',
             required: false,
             type: 'string',
-            default: 'json'
-          }
-        }
-      }
-    }
-  }
-}
+            default: 'json',
+          },
+        },
+      },
+    },
+  },
+};

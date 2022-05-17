@@ -11,5 +11,5 @@ module.exports = {
   transformItems,
   batchWriteItems,
   seedItems,
-  deleteItems
-}
+  deleteItems,
+};

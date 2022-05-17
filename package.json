@@ -1,11 +1,19 @@
 {
   "name": "@jitsecurity/dynamodb-data-migrations",
-  "version": "1.0.5-rc.0",
+  "version": "0.1.0",
   "description": "Serverless plugin for DynamoDB data migrations",
-  "main": "sls-plugin.js",
+  "main": "./index.js",
   "repository": "https://github.com/jitsecurity/sls-dynamodb-data-migrations",
   "author": "Guy Braunstain <guy@jit.io>",
+  "contributors": [
+    "Guy Braunstain (https://github.com/Guy7B)"
+  ],
   "license": "MIT",
+  "scripts": {
+    "format": "eslint . --fix",
+    "lint": "eslint .",
+    "start": "node cli/index.js"
+  },
   "bugs": {
     "url": "https://github.com/jitsecurity/sls-dynamodb-data-migrations/issues"
   },
@@ -13,9 +21,23 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "devDependencies": {
+  "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.82.0",
+    "@aws-sdk/client-kms": "^3.85.0",
     "@aws-sdk/lib-dynamodb": "^3.82.0",
-    "@aws-sdk/client-kms": "^3.85.0"
+    "import-jsx": "^4.0.1",
+    "ink": "^3.2.0",
+    "ink-big-text": "^1.2.0",
+    "ink-form": "^1.0.2",
+    "ink-gradient": "^2.0.0",
+    "ink-select-input": "^4.2.1",
+    "react": "^17.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0"
+  },
+  "bin": {
+    "cli": "./cli/index.js"
   }
 }

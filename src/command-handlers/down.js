@@ -6,7 +6,7 @@ const down = async ({ table, dry: isDryRun }) => {
 
   const latestBatch = await getLatestBatch(ddb, table);
   if (!latestBatch) {
-    console.info("No migration has been executed, there is no need to rollback.")
+    console.info('No migration has been executed, there is no need to rollback.');
     return;
   }
 
@@ -17,8 +17,8 @@ const down = async ({ table, dry: isDryRun }) => {
   if (!isDryRun) {
     await removeSequenceFromBatch(ddb, latestBatch.batchNumber, lastSequence, table);
   } else {
-    console.info(`It's a dry run`, isDryRun);
-  };
+    console.info("It's a dry run");
+  }
 };
 
 module.exports = down;

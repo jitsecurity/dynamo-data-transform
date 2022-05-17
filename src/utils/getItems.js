@@ -1,4 +1,4 @@
-const { ScanCommand } = require("@aws-sdk/lib-dynamodb");
+const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
 
 const getItems = async (ddb, lastEvalKey, tableName) => {
   const params = {
@@ -8,8 +8,7 @@ const getItems = async (ddb, lastEvalKey, tableName) => {
   };
 
   const scanCommand = new ScanCommand(params);
-  return await ddb.send(scanCommand);
+  return ddb.send(scanCommand);
 };
-
 
 module.exports = getItems;

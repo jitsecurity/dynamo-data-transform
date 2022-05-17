@@ -1,4 +1,5 @@
-const migrationsExecutionManager = require('./migrations-executions-manager')
+const migrationsExecutionManager = require('./migrations-executions-manager');
+
 module.exports = {
-    ...migrationsExecutionManager,
-}
+  ...migrationsExecutionManager,
+};

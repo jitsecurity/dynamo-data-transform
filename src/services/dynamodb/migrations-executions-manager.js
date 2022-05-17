@@ -1,8 +1,24 @@
-const { GetCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
+const { GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
 
+// support different Key schemas
 const MIGRATION_ITEM_KEY = {
   PK: 'Migrations',
   SK: 'Migrations',
+};
+
+const getMigrationRecord = async (ddb, table) => {
+  const getCommand = new GetCommand({
+    TableName: table,
+    Key: MIGRATION_ITEM_KEY,
+  });
+  try {
+    const { Item } = await ddb.send(getCommand);
+
+    if (!Item) console.info(`No migration record for table ${table}`);
+    return Item;
+  } catch (error) {
+    console.error(`Could not get migration record for table ${table}`, error);
+  }
 };
 
 const hasMigrationRun = async (ddb, sequence, table) => {
@@ -34,9 +50,9 @@ const syncMigrationRecord = async (ddb, batchNumber, sequence, table, transforme
         batchNumber,
         migrationNumber: sequence,
         executedCommand: 'up',
-        transformed
-      }
-    }
+        transformed,
+      },
+    },
   };
 
   const putCommand = new PutCommand({
@@ -50,7 +66,7 @@ const syncMigrationRecord = async (ddb, batchNumber, sequence, table, transforme
 const getMigrationsRunHistory = async (ddb, table) => {
   const migrationRecord = await getMigrationRecord(ddb, table);
   return migrationRecord ? migrationRecord.MigrationsRunHistory : {};
-}
+};
 
 const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
   const migrationRecord = await getMigrationRecord(ddb, table);
@@ -77,7 +93,7 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
     };
   }
 
-  updatedItem = {
+  const updatedItem = {
     ...migrationRecord,
     ...MIGRATION_ITEM_KEY,
     Batches: batches,
@@ -86,9 +102,9 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
       [new Date().toISOString()]: {
         batchNumber,
         migrationNumber: sequence,
-        executedCommand: 'down'
-      }
-    }
+        executedCommand: 'down',
+      },
+    },
   };
 
   const putCommand = new PutCommand({
@@ -96,24 +112,8 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
     Item: updatedItem,
   });
 
-  return await ddb.send(putCommand);
-}
-
-const getMigrationRecord = async (ddb, table) => {
-  const getCommand = new GetCommand({
-    TableName: table,
-    Key: MIGRATION_ITEM_KEY,
-  })
-  try {
-    const { Item } = await ddb.send(getCommand);
-
-    if (!Item) console.info(`No migration record for table ${table}`);
-    return Item;
-    
-  } catch (error) {
-    console.error(`Could not get migration record for table ${table}`, error);
-  }
-}
+  return ddb.send(putCommand);
+};
 
 const getLatestBatch = async (ddb, table) => {
   try {
@@ -129,7 +129,7 @@ const getLatestBatch = async (ddb, table) => {
       .reverse();
     const latestBatchNumber = batches[0];
     if (!latestBatchNumber) {
-      console.info('No latestBatchNumber')
+      console.info('No latestBatchNumber');
       return;
     }
     return {
@@ -139,9 +139,8 @@ const getLatestBatch = async (ddb, table) => {
   } catch (error) {
     console.error(
       `An error has occured while trying to get latest batch for table ${table}`,
-      error
+      error,
     );
-    return;
   }
 };
 
@@ -155,7 +154,7 @@ const removeBatch = async (ddb, batch, table) => {
   const updatedItem = {
     ...migrationRecord,
     ...MIGRATION_ITEM_KEY,
-    Batches: currentBatches
+    Batches: currentBatches,
   };
 
   const putCommand = new PutCommand({
@@ -174,4 +173,4 @@ module.exports = {
   syncMigrationRecord,
   hasMigrationRun,
   getMigrationsRunHistory,
-}
+};
