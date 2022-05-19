@@ -1,16 +1,22 @@
 const { BatchWriteCommand } = require('@aws-sdk/lib-dynamodb');
 
-const batchDeleteItems = async (ddb, tableName, items) => {
+const getKeySchemaOfItem = (item, keySchema) => {
+  const keySchemaOfItem = Object.keys(item).reduce((acc, key) => {
+    if (keySchema.find(({ AttributeName }) => AttributeName === key)) {
+      acc[key] = item[key];
+    }
+    return acc;
+  }, {});
+
+  return keySchemaOfItem;
+};
+
+const batchDeleteItems = async (ddb, tableName, items, keySchema) => {
   const params = {
     RequestItems: {
       [tableName]: items.map((item) => ({
         DeleteRequest: {
-          Key: {
-            // todo - add support for custom composite keys
-            PK: item.PK,
-            SK: item.SK,
-          },
-
+          Key: getKeySchemaOfItem(item, keySchema),
         },
       })),
     },

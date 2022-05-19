@@ -1,4 +1,5 @@
 const batchDeleteItems = require('./batchDeleteItems');
+const getTableKeySchema = require('./getTableKeySchema');
 const { getUnprocessedItems } = require('./responseUtils');
 
 const MAX_ITEMS_PER_BATCH = 25;
@@ -13,9 +14,11 @@ const deleteItems = async (ddb, tableName, items, isDryRun) => {
     batches.push(items.slice(i, i + MAX_ITEMS_PER_BATCH));
   }
 
+  const keySchema = await getTableKeySchema(tableName);
+
   try {
     const response = await Promise.all(
-      batches.map((batch) => batchDeleteItems(ddb, tableName, batch)),
+      batches.map((batch) => batchDeleteItems(ddb, tableName, batch, keySchema)),
     );
     const unprocessedItems = getUnprocessedItems(response);
 
@@ -26,6 +29,7 @@ const deleteItems = async (ddb, tableName, items, isDryRun) => {
     return { transformed: items.length };
   } catch (error) {
     console.error(`An error has occured in delete items for ${tableName}`, error);
+    throw error;
   }
 };
 

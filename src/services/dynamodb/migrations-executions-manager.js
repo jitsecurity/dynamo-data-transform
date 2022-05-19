@@ -1,23 +1,32 @@
 const { GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const getTableKeySchema = require('../../utils/getTableKeySchema');
 
-// support different Key schemas
-const MIGRATION_ITEM_KEY = {
-  PK: 'Migrations',
-  SK: 'Migrations',
+const MIGRATIONS_KEY_ID = 'Migrations';
+
+const getDataMigrationKey = async (table) => {
+  const keySchema = await getTableKeySchema(table);
+  const dataMigrationKey = keySchema.reduce((acc, val) => ({
+    ...acc,
+    [val.AttributeName]: MIGRATIONS_KEY_ID,
+  }), {});
+  return dataMigrationKey;
 };
 
 const getMigrationRecord = async (ddb, table) => {
+  const dataMigrationKey = await getDataMigrationKey(table);
   const getCommand = new GetCommand({
     TableName: table,
-    Key: MIGRATION_ITEM_KEY,
+    Key: dataMigrationKey,
   });
+
   try {
     const { Item } = await ddb.send(getCommand);
 
     if (!Item) console.info(`No migration record for table ${table}`);
-    return Item;
+    return Item || dataMigrationKey;
   } catch (error) {
     console.error(`Could not get migration record for table ${table}`, error);
+    return dataMigrationKey;
   }
 };
 
@@ -39,7 +48,6 @@ const syncMigrationRecord = async (ddb, batchNumber, sequence, table, transforme
   batchToUpdate.push(sequence);
   const updatedItem = {
     ...migrationRecord,
-    ...MIGRATION_ITEM_KEY,
     Batches: {
       ...existingBatches,
       [batchNumber]: batchToUpdate,
@@ -95,7 +103,6 @@ const removeSequenceFromBatch = async (ddb, batchNumber, sequence, table) => {
 
   const updatedItem = {
     ...migrationRecord,
-    ...MIGRATION_ITEM_KEY,
     Batches: batches,
     MigrationsRunHistory: {
       ...migrationsRunHistory,
@@ -153,7 +160,6 @@ const removeBatch = async (ddb, batch, table) => {
   delete currentBatches[`${batch}`];
   const updatedItem = {
     ...migrationRecord,
-    ...MIGRATION_ITEM_KEY,
     Batches: currentBatches,
   };
 
