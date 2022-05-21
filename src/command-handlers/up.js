@@ -1,24 +1,22 @@
 const fs = require('fs').promises;
-const { KMSClient } = require('@aws-sdk/client-kms');
-const { getDecryptedData } = require('../services/aws-kms');
 const { getLatestBatch, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
+const { getDataFromS3Bucket } = require('../services/s3');
 
 const MIGRATIONS_FOLDER_NAME = 'migrations';
 
 const baseMigrationsFolderPath = `${process.cwd()}/${MIGRATIONS_FOLDER_NAME}`;
 
-const migrate = async (ddb, migration, table, stage, kms, isDryRun) => {
+const migrate = async (ddb, migration, table, isDryRun) => {
   const { sequence, transformUp, prepare } = migration;
   const isMigrationRun = await hasMigrationRun(ddb, sequence, table);
-  const env = process.env.ENV_NAME || stage;
 
   if (!isMigrationRun) {
     let preparationData = {};
     const shouldUsePreparationData = Boolean(prepare);
     if (shouldUsePreparationData) {
-      const encryptedPreparationData = await fs.readFile(`${baseMigrationsFolderPath}/${table}/v${sequence}.${env}.encrypted`);
-      preparationData = await getDecryptedData(kms, encryptedPreparationData);
+      const preparationFilePath = `${table}/v${sequence}`;
+      preparationData = await getDataFromS3Bucket(preparationFilePath);
       console.info('Migrating using preparation data');
     }
 
@@ -59,9 +57,8 @@ const getMigrationsForCurrentTable = async (table, latestBatch) => {
   }
 };
 
-const up = async ({ stage, dry: isDryRun }) => {
+const up = async ({ dry: isDryRun }) => {
   const ddb = getDynamoDBClient();
-  const kms = new KMSClient();
 
   const tables = await fs.readdir(baseMigrationsFolderPath);
   console.info(`Available tables for migration ${tables || 'No tables found'}.`);
@@ -73,7 +70,7 @@ const up = async ({ stage, dry: isDryRun }) => {
 
     for (const migration of migrationsToExecute) {
       console.info('Started migration ', migration.sequence, table);
-      await migrate(ddb, migration, table, stage, kms, isDryRun);
+      await migrate(ddb, migration, table, isDryRun);
     }
   }));
 };

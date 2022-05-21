@@ -11,8 +11,7 @@
   "license": "MIT",
   "scripts": {
     "format": "eslint . --fix",
-    "lint": "eslint .",
-    "start": "node cli/index.js"
+    "lint": "eslint ."
   },
   "bugs": {
     "url": "https://github.com/jitsecurity/sls-dynamodb-data-migrations/issues"
@@ -23,7 +22,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.82.0",
-    "@aws-sdk/client-kms": "^3.85.0",
+    "@aws-sdk/client-s3": "^3.94.0",
     "@aws-sdk/lib-dynamodb": "^3.82.0",
     "import-jsx": "^4.0.1",
     "ink": "^3.2.0",

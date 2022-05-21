@@ -5,12 +5,6 @@ const COMMAND_OPTIONS = {
   table: {
     type: 'string', name: 'table', label: 'Specify table name', initialValue: '',
   },
-  stage: {
-    type: 'string', name: 'stage', label: 'Specify the current stage e.g (local | dev | staging | prod)', initialValue: '',
-  },
-  preparationPath: {
-    type: 'string', name: 'preparationPath', label: 'Specify the path of the preparation function', initialValue: '',
-  },
   mVersion: {
     type: 'string', name: 'mVersion', label: 'Specify the version of current migration', initialValue: '',
   },
@@ -23,7 +17,6 @@ const CLI_FORM = {
   up: {
     title: 'Up Parameters',
     fields: [
-      COMMAND_OPTIONS.stage,
       COMMAND_OPTIONS.dry,
     ],
   },
@@ -31,16 +24,14 @@ const CLI_FORM = {
     title: 'Down Parameters',
     fields: [
       COMMAND_OPTIONS.table,
-      COMMAND_OPTIONS.stage,
       COMMAND_OPTIONS.dry,
     ],
   },
   prepare: {
     title: 'Preparetion Parameters',
     fields: [
-      COMMAND_OPTIONS.preparationPath,
+      COMMAND_OPTIONS.table,
       COMMAND_OPTIONS.mVersion,
-      COMMAND_OPTIONS.stage,
       COMMAND_OPTIONS.dry,
     ],
   },
@@ -53,7 +44,7 @@ const CLI_FORM = {
   init: {
     title: 'Init Parameters',
     fields: [
-      COMMAND_OPTIONS.tableNames,
+      COMMAND_OPTIONS.tableNames, // fix
     ],
   },
 };

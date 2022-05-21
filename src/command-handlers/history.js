@@ -10,7 +10,7 @@ const getHistory = async ({ table }) => {
   const sortedHistory = Object.keys(history)
     .sort((a, b) => new Date(a) - new Date(b))
     .map((key) => ({
-      Date: key,
+      Date: new Date(key).toLocaleString(),
       Command: history[key].executedCommand,
       'Migration Number': history[key].migrationNumber,
     }));
