@@ -26,7 +26,8 @@ const seedItems = async (ddb, tableName, items, isDryRun) => {
 
     return { transformed: items.length };
   } catch (error) {
-    console.error(`An error has occured in seed items for ${tableName}`, error);
+    console.error(`An error has occured in seed items for ${tableName}`);
+    throw error;
   }
 };
 

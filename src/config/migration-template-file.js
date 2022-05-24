@@ -25,5 +25,5 @@ module.exports = {
   transformUp,
   transformDown,
   // prepare, // pass this function only if you need preparation data for the migration
-  sequence: 1, // the migration number
+  migrationNumber: 1,
 };

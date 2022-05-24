@@ -1,5 +1,6 @@
 const { getMigrationsRunHistory } = require('../services/dynamodb/migrations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
+const { ddbErrorsWrapper } = require('../services/dynamodb');
 
 const getHistory = async ({ table }) => {
   const ddb = getDynamoDBClient();
@@ -18,4 +19,4 @@ const getHistory = async ({ table }) => {
   console.table(sortedHistory);
 };
 
-module.exports = getHistory;
+module.exports = ddbErrorsWrapper(getHistory);

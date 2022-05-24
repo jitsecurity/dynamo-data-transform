@@ -1,58 +1,56 @@
 const fs = require('fs').promises;
-const { getLatestBatch, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager');
+const { getLatestDataMigrationNumber, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
 const { getDataFromS3Bucket } = require('../services/s3');
+const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
+const { ddbErrorsWrapper } = require('../services/dynamodb');
 
-const MIGRATIONS_FOLDER_NAME = 'migrations';
+const baseMigrationsFolderPath = `${process.cwd()}/${DATA_MIGRATIONS_FOLDER_NAME}`;
 
-const baseMigrationsFolderPath = `${process.cwd()}/${MIGRATIONS_FOLDER_NAME}`;
-
-const migrate = async (ddb, migration, table, isDryRun) => {
-  const { sequence, transformUp, prepare } = migration;
-  const isMigrationRun = await hasMigrationRun(ddb, sequence, table);
+const executeDataMigration = async (ddb, migration, table, isDryRun) => {
+  const { migrationNumber, transformUp, prepare } = migration;
+  const isMigrationRun = await hasMigrationRun(ddb, migrationNumber, table);
 
   if (!isMigrationRun) {
     let preparationData = {};
     const shouldUsePreparationData = Boolean(prepare);
     if (shouldUsePreparationData) {
-      const preparationFilePath = `${table}/v${sequence}`;
+      const preparationFilePath = `${table}/v${migrationNumber}`;
       preparationData = await getDataFromS3Bucket(preparationFilePath);
-      console.info('Migrating using preparation data');
+      console.info('Running data migration script using preparation data');
     }
 
     const transformationResponse = await transformUp(ddb, preparationData, isDryRun);
     if (!isDryRun) {
-      // TODO: add support for batches, currently only one migration per batch is supported
-      const batch = sequence;
-      await syncMigrationRecord(ddb, batch, sequence, table, transformationResponse?.transformed);
+      await syncMigrationRecord(ddb, migrationNumber, table, transformationResponse?.transformed);
     } else {
       console.info("It's a dry run");
     }
   } else {
-    console.info(`Migration ${sequence} has already been executed for table ${table}`);
+    console.info(`Data Migration script ${migrationNumber} has already been executed for table ${table}`);
   }
 };
 
-const getMigrationsForCurrentTable = async (table, latestBatch) => {
+const getScriptsToExecuteForTable = async (table, latestDataMigrationNumber) => {
   try {
-    const nextSequence = latestBatch ? latestBatch.sequences.sort().reverse()[0] + 1 : 1;
+    const nextDataMigrationNumber = latestDataMigrationNumber + 1;
 
     const migrationFiles = await fs.readdir(`${baseMigrationsFolderPath}/${table}`);
 
     const jsFiles = migrationFiles.filter((f) => f.endsWith('.js'));
 
-    const sortedMigrations = jsFiles
+    const sortedScripts = jsFiles
       .map((fileName) => require(`${baseMigrationsFolderPath}/${table}/${fileName}`))
-      .sort((a, b) => a.sequence - b.sequence);
+      .sort((a, b) => a.migrationNumber - b.migrationNumber);
 
-    const filteredMigrationsByNextSequence = sortedMigrations.filter(
-      (m) => m.sequence >= nextSequence,
+    const scriptsToExecute = sortedScripts.filter(
+      (m) => m.migrationNumber >= nextDataMigrationNumber,
     );
 
-    console.debug(`Number of migration files to execute - ${filteredMigrationsByNextSequence.length} for table ${table}.`);
-    return filteredMigrationsByNextSequence;
+    console.info(`Number of data migration scripts to execute - ${scriptsToExecute.length} for table ${table}.`);
+    return scriptsToExecute;
   } catch (error) {
-    console.error(`Could not get migrations for current table - ${table}, latestBatch: ${JSON.stringify(latestBatch)}`, error);
+    console.error(`Could not get data migrations scripts for current table - ${table}, latest data migration number: ${latestDataMigrationNumber}`);
     throw error;
   }
 };
@@ -64,15 +62,17 @@ const up = async ({ dry: isDryRun }) => {
   console.info(`Available tables for migration ${tables || 'No tables found'}.`);
 
   return Promise.all(tables.map(async (table) => {
-    console.info(`Getting latest batch of migration for table ${table}.`);
-    const latestBatch = await getLatestBatch(ddb, table);
-    const migrationsToExecute = await getMigrationsForCurrentTable(table, latestBatch);
+    const latestDataMigrationNumber = await getLatestDataMigrationNumber(ddb, table);
+    const migrationsToExecute = await getScriptsToExecuteForTable(
+      table,
+      latestDataMigrationNumber,
+    );
 
     for (const migration of migrationsToExecute) {
-      console.info('Started migration ', migration.sequence, table);
-      await migrate(ddb, migration, table, isDryRun);
+      console.info('Started data migration ', migration.migrationNumber, table);
+      await executeDataMigration(ddb, migration, table, isDryRun);
     }
   }));
 };
 
-module.exports = up;
+module.exports = ddbErrorsWrapper(up);

@@ -7,7 +7,7 @@ const getTableKeySchema = async (table) => {
     const { Table } = await ddbClient.send(new DescribeTableCommand({ TableName: table }));
     return Table.KeySchema;
   } catch (error) {
-    console.error(`Could not get key schema of table ${table}`, error);
+    console.error(`Could not get key schema of table ${table}`);
     throw error;
   }
 };

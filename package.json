@@ -1,6 +1,6 @@
 {
   "name": "@jitsecurity/dynamodb-data-migrations",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.1",
   "description": "Serverless plugin for DynamoDB data migrations",
   "main": "./index.js",
   "repository": "https://github.com/jitsecurity/sls-dynamodb-data-migrations",

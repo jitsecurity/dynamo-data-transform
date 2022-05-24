@@ -1,6 +1,5 @@
 const fs = require('fs');
-
-const MIGRATIONS_FOLDER_NAME = 'migrations';
+const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
 
 const createFolderIfNotExist = (folderPath) => {
   if (!fs.existsSync(folderPath)) {
@@ -13,7 +12,7 @@ const createFolderIfNotExist = (folderPath) => {
 };
 
 const initHandler = async ({ tableNames }) => {
-  const baseMigrationsFolderPath = `${process.cwd()}/${MIGRATIONS_FOLDER_NAME}`;
+  const baseMigrationsFolderPath = `${process.cwd()}/${DATA_MIGRATIONS_FOLDER_NAME}`;
 
   createFolderIfNotExist(baseMigrationsFolderPath);
 

@@ -1,13 +1,15 @@
 const path = require('path');
 const { uploadDataToPrivateS3Bucket } = require('../services/s3');
 const { getDynamoDBClient } = require('../clients');
+const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
+const { ddbErrorsWrapper } = require('../services/dynamodb');
 
 const prepareHandler = async (options) => {
   const {
     table, mVersion, dry: isDryRun,
   } = options;
 
-  const preparationPath = path.join(process.cwd(), 'migrations', table, `${mVersion}.js`);
+  const preparationPath = path.join(process.cwd(), DATA_MIGRATIONS_FOLDER_NAME, table, `${mVersion}.js`);
   const { prepare } = require(preparationPath);
 
   const ddb = getDynamoDBClient();
@@ -24,4 +26,4 @@ const prepareHandler = async (options) => {
   }
 };
 
-module.exports = prepareHandler;
+module.exports = ddbErrorsWrapper(prepareHandler);
