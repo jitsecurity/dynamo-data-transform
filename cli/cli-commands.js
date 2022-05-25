@@ -57,7 +57,7 @@ const CLI_FORM = {
   },
 };
 
-const CLI_COMMAND_OPTIONS = Object.values([CLI_COMMANDS.up]).map((command) => {
+const CLI_COMMAND_OPTIONS = Object.values(CLI_COMMANDS).map((command) => {
   return {
     label: command,
     value: command,

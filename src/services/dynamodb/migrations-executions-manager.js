@@ -65,7 +65,7 @@ const syncMigrationRecord = async (ddb, migrationNumber, table, transformed) => 
 
 const getMigrationsRunHistory = async (ddb, table) => {
   const migrationRecord = await getDataMigrationRecord(ddb, table);
-  return migrationRecord ? migrationRecord.MigrationsRunHistory : {};
+  return migrationRecord?.MigrationsRunHistory || {};
 };
 
 const rollbackMigration = async (ddb, migrationNumber, table) => {
