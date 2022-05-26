@@ -40,7 +40,7 @@ class ServerlessDynamoMigrations {
     return init({ tableNames }).then(() => {
       console.info('"init" command ran successfully.');
     }).catch((error) => {
-      console.error(error, 'An error has occured while running migration (init).');
+      console.error('An error has occured while running migration (init).', error.message);
     });
   }
 
@@ -48,7 +48,7 @@ class ServerlessDynamoMigrations {
     return prepare(this.options).then(() => {
       console.info('"prepare" command ran successfully.');
     }).catch((error) => {
-      console.error(error, 'An error has occured while preparing data for migration.');
+      console.error('An error has occured while preparing data for migration.', error.message);
     });
   }
 
@@ -56,7 +56,7 @@ class ServerlessDynamoMigrations {
     return up(this.options).then(() => {
       console.info('"up" command ran successfully.');
     }).catch((error) => {
-      console.error(error, 'An error has occured while running migration (up).');
+      console.error('An error has occured while running migration (up).', error.message);
     });
   }
 
@@ -64,7 +64,7 @@ class ServerlessDynamoMigrations {
     return down(this.options).then(() => {
       console.info('"down" command run successfully.');
     }).catch((error) => {
-      console.error(error, 'An error has occured while running migration (down).');
+      console.error('An error has occured while running migration (down).', error.message);
     });
   }
 
@@ -72,7 +72,7 @@ class ServerlessDynamoMigrations {
     return getHistory(this.options).then(() => {
       console.info('"history" command run successfully.');
     }).catch((error) => {
-      console.error(error, 'An error has occured while running migration (history).');
+      console.error('An error has occured while running migration (history).', error.message);
     });
   }
 }

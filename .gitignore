@@ -4,3 +4,4 @@ dist
 guy
 .vscode
 dynamodb-migrations-cli
+.DS_Store

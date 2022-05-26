@@ -17,15 +17,18 @@ const getForm = (selection) => {
 };
 
 const convertStringValueToArray = (values) => {
-  const valuesArray = Object.keys(values).map((key) => {
-    if (typeof values[key] === 'string') {
-      return values[key]
-        .replace(/ /g,'') // remove empty spaces
-        .split(',');
+  const formattedValues = Object.entries(values).reduce((acc, [key, value]) => {
+    if (typeof value === 'string') {
+      return {
+        ...acc,
+        [key]: values[key]
+          .replace(/ /g,'') // remove empty spaces
+          .split(',')
+      };
     }
-    return values[key];
-  });
-  return valuesArray;
+    return acc;
+  }, values);
+  return formattedValues;
 };
 
 const buildScriptParameters = (selection, values) => {

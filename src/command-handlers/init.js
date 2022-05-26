@@ -16,7 +16,7 @@ const initHandler = async ({ tableNames }) => {
 
   createFolderIfNotExist(baseMigrationsFolderPath);
 
-  tableNames.forEach((tableName) => {
+  tableNames?.forEach((tableName) => {
     const isExist = createFolderIfNotExist(`${baseMigrationsFolderPath}/${tableName}`);
     if (!isExist) {
       const origin = `${__dirname}/../config/migration-template-file.js`;

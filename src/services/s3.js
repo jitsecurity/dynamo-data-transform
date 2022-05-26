@@ -29,7 +29,7 @@ const uploadDataToPrivateS3Bucket = async (filePath, body) => {
     const dataUpload = await s3Client.send(command);
     return dataUpload;
   } catch (error) {
-    console.error(`Error uploading data to S3 bucket: ${error}`);
+    console.error('Error uploading data to S3 bucket', error.message);
     throw error;
   }
 };
@@ -52,7 +52,7 @@ const getDataFromS3Bucket = async (filePath) => {
   } catch (error) {
     console.error(`Error getting data for path: 
       ${filePath} from S3 bucket: 
-      ${process.env.S3_BUCKET_NAME}`, error);
+      ${process.env.S3_BUCKET_NAME} \n`, error.message);
     throw error;
   }
 };
