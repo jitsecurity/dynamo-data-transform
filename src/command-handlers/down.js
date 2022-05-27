@@ -1,6 +1,5 @@
-const path = require('path');
 const { getDynamoDBClient } = require('../clients');
-const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
+const { getDataMigrationScriptFullPath } = require('../data-migration-script-explorer');
 const { getLatestDataMigrationNumber, rollbackMigration } = require('../services/dynamodb'); // rename folder
 const { ddbErrorsWrapper } = require('../services/dynamodb');
 const { getDataFromS3Bucket } = require('../services/s3');
@@ -14,7 +13,11 @@ const down = async ({ table, dry: isDryRun }) => {
     return;
   }
 
-  const dataMigrationFilePath = path.join(process.cwd(), DATA_MIGRATIONS_FOLDER_NAME, table, `v${latestDataMigrationNumber}.js`);
+  const dataMigrationFilePath = await getDataMigrationScriptFullPath(
+    latestDataMigrationNumber,
+    table,
+  );
+
   const { transformDown, prepare } = require(dataMigrationFilePath);
 
   let preparationData = {};

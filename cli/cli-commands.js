@@ -5,8 +5,8 @@ const COMMAND_OPTIONS = {
   table: {
     type: 'string', name: 'table', label: 'Specify table name', initialValue: '',
   },
-  mVersion: {
-    type: 'string', name: 'mVersion', label: 'Specify the version of current migration e.g "v2"', initialValue: '',
+  mNumber: {
+    type: 'string', name: 'mNumber', label: 'Specify the version of current migration e.g "2"', initialValue: 1,
   },
   tableNames: {
     type: 'string', name: 'tableNames', label: 'Specify table names e.g "table1, table2"', initialValue: '',
@@ -39,7 +39,7 @@ const CLI_FORM = {
     title: 'Preparetion Parameters',
     fields: [
       COMMAND_OPTIONS.table,
-      COMMAND_OPTIONS.mVersion,
+      COMMAND_OPTIONS.mNumber,
       COMMAND_OPTIONS.dry,
     ],
   },

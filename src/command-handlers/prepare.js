@@ -1,19 +1,19 @@
-const path = require('path');
 const { uploadDataToS3Bucket } = require('../services/s3');
 const { getDynamoDBClient } = require('../clients');
-const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
 const { ddbErrorsWrapper } = require('../services/dynamodb');
+const { getDataMigrationScriptFullPath } = require('../data-migration-script-explorer');
+const { MIGRATION_NUMBER_PREFIX } = require('../config/constants');
 
-const prepareHandler = async (options) => {
-  const {
-    table, mVersion, dry: isDryRun,
-  } = options;
+const prepareHandler = async ({ table, mNumber, dry: isDryRun }) => {
+  const preparationPath = await getDataMigrationScriptFullPath(
+    mNumber,
+    table,
+  );
 
-  const preparationPath = path.join(process.cwd(), DATA_MIGRATIONS_FOLDER_NAME, table, `${mVersion}.js`);
   const { prepare } = require(preparationPath);
 
   const ddb = getDynamoDBClient();
-  const prepatationDataPath = `${table}/${mVersion}`;
+  const prepatationDataPath = `${table}/${MIGRATION_NUMBER_PREFIX}${mNumber}`;
   const preparationData = await prepare(ddb);
   if (isDryRun) {
     console.info(preparationData, 'preparationData');

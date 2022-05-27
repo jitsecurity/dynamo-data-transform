@@ -7,7 +7,7 @@ const parseArgs = require('minimist')
 const commandAliases = {
   dry: 'd',
   table: 't',
-  mVersion: 'm',
+  mNumber: 'm',
   tableNames: 'n',
   interactive: 'i',
 };
@@ -15,7 +15,8 @@ const commandAliases = {
 const options = parseArgs(process.argv.slice(2),{
   alias: commandAliases,
   boolean: ['dry', 'interactive'],
-  string: ['table', 'mVersion', 'tableNames'],
+  string: ['table', 'tableNames'],
+  number: ['mNumber'],
 });
 
 if (options.interactive) {

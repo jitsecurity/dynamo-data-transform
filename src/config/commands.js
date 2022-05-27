@@ -11,8 +11,8 @@ const COMMAND_OPTIONS = {
     required: true,
     type: 'string',
   },
-  mVersion: {
-    usage: 'Specify the version of current migration (e.g. "--mVersion v1")',
+  mNumber: {
+    usage: 'Specify the version of current migration (e.g. "--mNumber 1")',
     required: true,
     type: 'string',
   },
@@ -37,10 +37,10 @@ module.exports = {
         },
       },
       prepare: {
-        usage: 'sls migration prepare -p $(pwd)/migrations/{{YOUR_TABLE}}/v1.js --mVersion v1 - Prepare data for migration pass full path of the prepatation script',
+        usage: 'sls migration prepare -p $(pwd)/migrations/{{YOUR_TABLE}}/v1.js --mNumber v1 - Prepare data for migration pass full path of the prepatation script',
         lifecycleEvents: ['prepare'],
         options: {
-          mVersion: COMMAND_OPTIONS.mVersion,
+          mNumber: COMMAND_OPTIONS.mNumber,
           dry: COMMAND_OPTIONS.dry,
           table: COMMAND_OPTIONS.table,
         },

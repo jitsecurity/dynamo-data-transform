@@ -20,7 +20,7 @@ const initHandler = async ({ tableNames }) => {
     const isExist = createFolderIfNotExist(`${baseMigrationsFolderPath}/${tableName}`);
     if (!isExist) {
       const origin = `${__dirname}/../config/migration-template-file.js`;
-      const destination = `${baseMigrationsFolderPath}/${tableName}/v1.js`;
+      const destination = `${baseMigrationsFolderPath}/${tableName}/v1_script-name.js`;
       const originFile = fs.readFileSync(origin, 'utf8');
       const destinationFile = originFile.replace(/{{YOUR_TABLE_NAME}}/g, tableName);
       fs.writeFile(destination, destinationFile, 'utf8', (error) => {

@@ -1,11 +1,11 @@
+const path = require('path');
 const fs = require('fs').promises;
 const { getLatestDataMigrationNumber, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
 const { getDataFromS3Bucket } = require('../services/s3');
-const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
+const { BASE_MIGRATIONS_FOLDER_PATH, MIGRATION_SCRIPT_EXTENSION } = require('../config/constants');
 const { ddbErrorsWrapper } = require('../services/dynamodb');
-
-const baseMigrationsFolderPath = `${process.cwd()}/${DATA_MIGRATIONS_FOLDER_NAME}`;
+const { parseMigrationFileNumber, getTableDataMigrationFiles } = require('../data-migration-script-explorer');
 
 const executeDataMigration = async (ddb, migration, table, isDryRun) => {
   const { migrationNumber, transformUp, prepare } = migration;
@@ -31,21 +31,26 @@ const executeDataMigration = async (ddb, migration, table, isDryRun) => {
   }
 };
 
+const isGreaterThanLatestMigrationNumber = (fileName, latestDataMigrationNumber) => {
+  const migrationFileNumber = parseMigrationFileNumber(fileName);
+  return migrationFileNumber > latestDataMigrationNumber;
+};
+
 const getScriptsToExecuteForTable = async (table, latestDataMigrationNumber) => {
   try {
-    const nextDataMigrationNumber = latestDataMigrationNumber + 1;
+    const migrationFiles = await getTableDataMigrationFiles(table);
 
-    const migrationFiles = await fs.readdir(`${baseMigrationsFolderPath}/${table}`);
+    const currentMigrationFiles = migrationFiles.filter((fileName) => {
+      const isJsFile = path.extname(fileName) === MIGRATION_SCRIPT_EXTENSION;
+      return isJsFile && isGreaterThanLatestMigrationNumber(fileName, latestDataMigrationNumber);
+    });
 
-    const jsFiles = migrationFiles.filter((f) => f.endsWith('.js'));
+    const sortedMigrationFiles = currentMigrationFiles.sort();
 
-    const sortedScripts = jsFiles
-      .map((fileName) => require(`${baseMigrationsFolderPath}/${table}/${fileName}`))
-      .sort((a, b) => a.migrationNumber - b.migrationNumber);
-
-    const scriptsToExecute = sortedScripts.filter(
-      (m) => m.migrationNumber >= nextDataMigrationNumber,
-    );
+    const scriptsToExecute = sortedMigrationFiles
+      .map((fileName) => require(
+        path.join(BASE_MIGRATIONS_FOLDER_PATH, table, fileName),
+      ));
 
     console.info(`Number of data migration scripts to execute - ${scriptsToExecute.length} for table ${table}.`);
     return scriptsToExecute;
@@ -58,8 +63,8 @@ const getScriptsToExecuteForTable = async (table, latestDataMigrationNumber) => 
 const up = async ({ dry: isDryRun }) => {
   const ddb = getDynamoDBClient();
 
-  const tables = await fs.readdir(baseMigrationsFolderPath);
-  console.info(`Available tables for migration ${tables || 'No tables found'}.`);
+  const tables = await fs.readdir(BASE_MIGRATIONS_FOLDER_PATH);
+  console.info(`Available tables for migration: ${tables || 'No tables found'}.`);
 
   return Promise.all(tables.map(async (table) => {
     const latestDataMigrationNumber = await getLatestDataMigrationNumber(ddb, table);
