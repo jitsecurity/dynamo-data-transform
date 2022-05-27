@@ -1,4 +1,6 @@
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const {
+  S3Client, PutObjectCommand, GetObjectCommand,
+} = require('@aws-sdk/client-s3');
 
 const getS3Client = () => {
   let s3Client;
@@ -13,7 +15,7 @@ const getS3Client = () => {
   return s3Client;
 };
 
-const uploadDataToPrivateS3Bucket = async (filePath, body) => {
+const uploadDataToS3Bucket = async (filePath, body) => {
   try {
     if (!body) {
       throw new Error(`Empty body for preparation data is not allowed.
@@ -21,9 +23,12 @@ const uploadDataToPrivateS3Bucket = async (filePath, body) => {
     }
     const s3Client = getS3Client();
     const command = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME || 'migrations-preparation-data',
+      Bucket: process.env.PREPARATION_DATA_BUCKET || 'migrations-preparation-data-rocket',
       Key: filePath,
       Body: body,
+      ServerSideEncryption: 'AES256',
+      ACL: 'private',
+      ContentType: 'application/json',
     });
 
     const dataUpload = await s3Client.send(command);
@@ -34,30 +39,46 @@ const uploadDataToPrivateS3Bucket = async (filePath, body) => {
   }
 };
 
+const getS3ObjectPromisified = (Bucket, Key) => {
+  const s3Client = getS3Client();
+
+  return new Promise((resolve, reject) => {
+    const getObjectCommand = new GetObjectCommand({ Bucket, Key });
+
+    s3Client.send(getObjectCommand).then((data) => {
+      const responseDataChunks = [];
+      const body = data.Body;
+      body.once('error', (err) => reject(err));
+
+      body.on('data', (chunk) => responseDataChunks.push(chunk));
+
+      body.once('end', () => resolve(responseDataChunks.join('')));
+    }).catch((error) => {
+      reject(error);
+    });
+  });
+};
+
 const getDataFromS3Bucket = async (filePath) => {
   try {
-    const s3Client = getS3Client();
-    const command = new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME || 'migrations-preparation-data',
-      Key: filePath,
-    });
-
-    const data = await s3Client.send(command);
-    const body = await data.Body.read();
-    if (!body) {
+    const content = await getS3ObjectPromisified(
+      process.env.PREPARATION_DATA_BUCKET || 'migrations-preparation-data',
+      filePath,
+    );
+    if (!content) {
       throw new Error(`Received empty body for preparation data.
       Please rerun prepare script and make sure you return a valid object.`);
     }
-    return body.toString();
+    return content;
   } catch (error) {
     console.error(`Error getting data for path: 
-      ${filePath} from S3 bucket: 
-      ${process.env.S3_BUCKET_NAME} \n`, error.message);
+      '${filePath}' from S3 bucket: 
+      ${process.env.PREPARATION_DATA_BUCKET} \n`, error.message);
     throw error;
   }
 };
 
 module.exports = {
-  uploadDataToPrivateS3Bucket,
+  uploadDataToS3Bucket,
   getDataFromS3Bucket,
 };

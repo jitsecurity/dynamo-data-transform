@@ -1,5 +1,5 @@
 const path = require('path');
-const { uploadDataToPrivateS3Bucket } = require('../services/s3');
+const { uploadDataToS3Bucket } = require('../services/s3');
 const { getDynamoDBClient } = require('../clients');
 const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
 const { ddbErrorsWrapper } = require('../services/dynamodb');
@@ -19,7 +19,7 @@ const prepareHandler = async (options) => {
     console.info(preparationData, 'preparationData');
     console.info("It's a dry run");
   } else {
-    await uploadDataToPrivateS3Bucket(
+    await uploadDataToS3Bucket(
       prepatationDataPath,
       JSON.stringify(preparationData),
     );
