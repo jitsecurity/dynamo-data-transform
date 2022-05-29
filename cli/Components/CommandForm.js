@@ -22,7 +22,7 @@ const convertStringValueToArray = (values) => {
       return {
         ...acc,
         [key]: values[key]
-          .replace(/ /g,'') // remove empty spaces
+          .replace(/ /g,'') // trim spaces
           .split(',')
       };
     }

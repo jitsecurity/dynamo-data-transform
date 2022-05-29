@@ -2,7 +2,9 @@
 'use-strict';
 
 const scripts = require('../src/command-handlers');
-const parseArgs = require('minimist')
+const parseArgs = require('minimist');
+const { COMMAND_DESCRIPTION } = require('../src/config/commands');
+const { HELP_COMMANDS } = require('./cli-commands');
 
 const commandAliases = {
   dry: 'd',
@@ -14,24 +16,38 @@ const commandAliases = {
 
 const options = parseArgs(process.argv.slice(2),{
   alias: commandAliases,
-  boolean: ['dry', 'interactive'],
+  boolean: ['dry', 'interactive', 'help'],
   string: ['table', 'tableNames'],
   number: ['mNumber'],
 });
 
-if (options.interactive) {
-  const importJsx = require('import-jsx');
-  importJsx('./Components/App');
-} else {
+(() => {
   const [command] = options._;
+  if(command === 'list') {
+    console.info('Available commands:');
+    Object.entries(COMMAND_DESCRIPTION).forEach(([key, value]) => {
+      console.info(`  ${key} - ${value}\n`);
+    });
 
-  scripts[command](options).then(() => {
-    console.info(`"${command}" command run successfully.`);
-    process.exit(0);
-  }).catch((error) => {
-    console.error(error, `An error has occured while running migration (${command}).`);
-    process.exit(1);
-  });
-}
+    return;
+  }
+
+  if (options.interactive) {
+    const importJsx = require('import-jsx');
+    importJsx('./Components/App');
+  } else {
+    if(options.help) {
+      console.info(HELP_COMMANDS[command]);
+      return;
+    }
+    scripts[command](options).then(() => {
+      console.info(`"${command}" command run successfully.`);
+      process.exit(0);
+    }).catch((error) => {
+      console.error(error, `An error has occured while running migration (${command}).`);
+      process.exit(1);
+    });
+  }
+})();
 
 

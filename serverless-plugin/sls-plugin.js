@@ -1,8 +1,9 @@
 const {
   init, up, down, prepare, history: getHistory,
 } = require('../src/command-handlers');
-const commands = require('../src/config/commands');
+const commands = require('./commands');
 const utils = require('../src/utils'); // export from core package
+const { getTableNames } = require('./sls-resources-parser');
 
 class ServerlessDynamoMigrations {
   static utils = utils;
@@ -27,13 +28,6 @@ class ServerlessDynamoMigrations {
   }
 
   async init() {
-    const getTableNames = (resources) => {
-      // TODO: Move this function to a more appropriate place
-      return Object.values(resources)
-        .filter((rValue) => rValue.Type === 'AWS::DynamoDB::Table')
-        .map((rValue) => rValue.Properties.TableName);
-    };
-
     const resources = this.provider.serverless.service.resources.Resources;
     const tableNames = getTableNames(resources);
 

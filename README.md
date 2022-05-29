@@ -1,4 +1,4 @@
-# Serverless DynamoDB Data Migrations Plugin
+# DynamoDB Data Migrations Tool
 
 <p>
   <a href="https://www.serverless.com">
@@ -18,12 +18,48 @@ Making changes in our database design is a regular process that happens sometime
 
 ![:)](./docs/images/undraw_data_extraction_re_0rd3.svg)
 
+## Quick Start:
+### Serverless plugin:
+- Install the tool:
+```bash
+npm install dynamodb-data-migrations --save-dev
+```
+- Add the tool to your serverless.yml:
+```YML
+plugins:
+  - dynamodb-data-migrations
+```
+- Run the tool:
+```bash
+sls migration list
+```
+
+### Standalone npm package:
+- Install the tool:
+```bash
+npm install -g dynamodb-data-migrations
+```
+- Run the tool:
+```bash
+dynamodb-data-migrations --help
+```
+Or with the shortcut:
+```bash
+ddm --help
+```
+- Use the interactive cli:
+```bash
+dynamodb-data-migrations -i
+```
+
+
+
 
 **Features**
 
 - Seemless data migrations management for every stage.
 - Safe & Secure preparation data - \
-  Generating encrypted preparation data for your migrations & Decrypting the data while running the migration.
+  Store preparation data in a private s3 bucket & .
 - Custom commands for executing data migrations from your local machine (if needed).
 - Dry run option for every command (by suppling --dry flag the data will be printed instead of stored).
 
@@ -45,47 +81,28 @@ Making changes in our database design is a regular process that happens sometime
 
 
 
-## Installation
-
-First, add Serverless DynamoDB Data Migrations Plugin to your project.
-
-Make sure your that the depndencies in the package.json file contains the plugin package:
-```JSON
-"dependencies": {
-  "@jitsecurity/sls-dynamodb-data-migrations": "git+ssh://git@github.com:jitsecurity/sls-dynamodb-data-migrations.git",
-}
-```
-
-Then inside your project's `serverless.yml` file, \
-add the following entry to the plugins section: `"@jitsecurity/sls-dynamodb-data-migrations"`.
-
-If there is no plugin section you will need to add it to the file.
-```YML
-plugins:
-  - "@jitsecurity/sls-dynamodb-data-migrations"
-```
 ## Usage and command-line options
 
-To list all the options for the plugin run in your root folder of the project:
-
-`sls migration --help`
-
-Available commands
-
+List available commands:
+Serverless plugin:
+```bash
+sls migration --help
 ```
-migration init              Initializes "migrations" folder with the specified tables
-                            in the resources of serverless.yml.
-
-migration up                Runs the next migration.
-
-migration prepare           Generates encrypted preparation data for your migration.
-
-migration down              Rolls back specific migration version. 
+Standalone npm package:
+```bash
+dynamodb-data-migrations list
 ```
 
-To list all of the options for a specific command run for example:
 
-`sls migration prepare --help`
+To list all of the options for a specific command run:
+Serverless plugin:
+```bash
+sls migration <command> --help
+```
+Standalone npm package:
+```bash
+dynamodb-data-migrations <command> --help
+```
 
 ## What it does behind the scenes
 - When migration is running for the first time a Record in your table is created. \

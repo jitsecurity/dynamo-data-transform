@@ -38,6 +38,7 @@
     "eslint-config-airbnb-base": "^15.0.0"
   },
   "bin": {
-    "cli": "./cli/index.js"
+    "dynamodb-data-migrations": "./cli/index.js",
+    "ddm": "./cli/index.js"
   }
 }
