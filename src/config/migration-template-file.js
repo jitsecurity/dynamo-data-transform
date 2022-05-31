@@ -2,23 +2,28 @@ const { utils } = require('@jitsecurity/dynamodb-data-migrations');
 
 const TABLE_NAME = '{{YOUR_TABLE_NAME}}';
 
-const up = (item) => {
-  // Adding a new field to the item example
-  const updatedItem = { ...item, newField: 'value' };
-  return updatedItem;
+/**
+ * @param {DynamoDBDocumentClient} ddb - dynamo db client of @aws-sdk https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-dynamodb
+ * @param {boolean} isDryRun
+ * @returns {{transformed: number}}
+ *
+ */
+const transformUp = async ({ ddb, isDryRun }) => {
+  // Replace this with your own logic
+  const addNewFieldToItem = (item) => {
+    const updatedItem = { ...item, newField: 'value' };
+    return updatedItem;
+  };
+  return utils.transformItems(ddb, isDryRun, TABLE_NAME, addNewFieldToItem);
 };
 
-const transformUp = async (ddb, preparationData, isDryRun) => {
-  return utils.transformItems(ddb, isDryRun, TABLE_NAME, up);
-};
-
-const down = (item) => {
-  const { newField, ...oldItem } = item;
-  return oldItem;
-};
-
-const transformDown = async (ddb, isDryRun) => {
-  return utils.transformItems(ddb, isDryRun, TABLE_NAME, down);
+const transformDown = async ({ ddb, isDryRun }) => {
+  // Replace this function with your own logic
+  const removeFieldFromItem = (item) => {
+    const { newField, ...oldItem } = item;
+    return oldItem;
+  };
+  return utils.transformItems(ddb, isDryRun, TABLE_NAME, removeFieldFromItem);
 };
 
 module.exports = {
@@ -27,3 +32,9 @@ module.exports = {
   // prepare, // pass this function only if you need preparation data for the migration
   migrationNumber: 1,
 };
+
+/**
+ * For more data migration scripts examples, see:
+ * https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples
+ *
+ */

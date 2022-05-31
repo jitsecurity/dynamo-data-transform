@@ -3,7 +3,7 @@ const { getUnprocessedItems } = require('./responseUtils');
 
 const MAX_ITEMS_PER_BATCH = 25;
 
-const seedItems = async (ddb, tableName, items, isDryRun) => {
+const insertItems = async (ddb, tableName, items, isDryRun) => {
   if (isDryRun) {
     console.info(`Dry run: would have seeded ${items.length} items to ${tableName}`, items);
     return;
@@ -31,4 +31,4 @@ const seedItems = async (ddb, tableName, items, isDryRun) => {
   }
 };
 
-module.exports = seedItems;
+module.exports = insertItems;

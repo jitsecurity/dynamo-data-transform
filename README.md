@@ -105,7 +105,7 @@ dynamodb-data-migrations <command> --help
 ```
 
 ## What it does behind the scenes
-- When migration is running for the first time a Record in your table is created. \
+- When a data migration is running for the first time a Record in your table is created. \
   This record is for tracking the executed migrations on a specific table.
 
 
@@ -131,13 +131,13 @@ Implement these functions:
 
 1. Preparing data from external resources for the migration can be done by using `sls migration prepare`
 
-    Run `sls migration prepare -p $(pwd)/migrations/{{YOUR_TABLE_NAME}}/v1.js`\
+    Run `sls migration prepare --mNumber <migration_number> --table <table>`\
     The data will be stored encrypted in this format: {{FILE_VERSION}}.{{ENV}}.encrypted (e.g v1.local.encrypted) \
     The data will be decrypted while running the migration script.
 
 1. **Final Step** Create a pull request. \
    Note that the migration runs after an sls deploy command it is integrated \
-   with lifecycle hooks of serverless `after:deploy:deploy` hook.
+   with lifecycle of serverless `after:deploy:deploy` hook.
 
 #### The Third Phase (Use The New Resources/Data):
 1. Adjust your code to work with the new data. \
@@ -160,6 +160,19 @@ To be continued
 
 
 ### Examples
+Examples of data migration code:
+
+#### Insert records
+https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v1_insert_users.js
+
+#### Add a new field to each record
+https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v2_add_random_number_field.js
+
+#### Add field using preparation data (s3 bucket)
+https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v3_using_preparation_data.js
+
+#### Split fullname into first and last name
+https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v4_split_fullname.js
 
 - Required functions to implement by the plugin user examples
 1. async transformUp
@@ -206,5 +219,3 @@ const transformDown = async (ddb, isDryRun) => {
   } while (lastEvalKey)
 }
 ```
-- To be continued
-<!-- - `sls migration up --stage local` -  -->

@@ -14,7 +14,7 @@ const prepareHandler = async ({ table, mNumber, dry: isDryRun }) => {
 
   const ddb = getDynamoDBClient();
   const prepatationDataPath = `${table}/${MIGRATION_NUMBER_PREFIX}${mNumber}`;
-  const preparationData = await prepare(ddb, isDryRun);
+  const preparationData = await prepare({ ddb, isDryRun });
   if (isDryRun) {
     console.info(preparationData, 'preparationData');
     console.info("It's a dry run");

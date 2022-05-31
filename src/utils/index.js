@@ -2,7 +2,7 @@ const getItems = require('./getItems');
 const transformItems = require('./transformItems');
 const transactWriteItems = require('./transactWriteItems');
 const batchWriteItems = require('./batchWriteItems');
-const seedItems = require('./seedItems');
+const insertItems = require('./insertItems');
 const deleteItems = require('./deleteItems');
 
 module.exports = {
@@ -10,6 +10,6 @@ module.exports = {
   transactWriteItems,
   transformItems,
   batchWriteItems,
-  seedItems,
+  insertItems,
   deleteItems,
 };

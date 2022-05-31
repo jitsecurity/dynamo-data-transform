@@ -20,7 +20,7 @@ const executeDataMigration = async (ddb, migration, table, isDryRun) => {
       console.info('Running data migration script using preparation data');
     }
 
-    const transformationResponse = await transformUp(ddb, preparationData, isDryRun);
+    const transformationResponse = await transformUp({ ddb, preparationData, isDryRun });
     if (!isDryRun) {
       await syncMigrationRecord(ddb, migrationNumber, table, transformationResponse?.transformed);
     } else {

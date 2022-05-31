@@ -1,7 +1,6 @@
 const { GetCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { DATA_MIGRATIONS_KEY_ID } = require('../../config/constants');
 const getTableKeySchema = require('../../utils/getTableKeySchema');
-
-const DATA_MIGRATIONS_KEY_ID = 'DataMigrations';
 
 const getDataMigrationKey = async (table) => {
   const keySchema = await getTableKeySchema(table);

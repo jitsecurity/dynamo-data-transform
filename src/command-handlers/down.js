@@ -28,7 +28,7 @@ const down = async ({ table, dry: isDryRun }) => {
     console.info('Running data migration script using preparation data');
   }
 
-  await transformDown(ddb, preparationData, isDryRun);
+  await transformDown({ ddb, preparationData, isDryRun });
 
   if (!isDryRun) {
     await rollbackMigration(ddb, latestDataMigrationNumber, table);
