@@ -1,7 +1,8 @@
 node_modules
 .envrc
 dist
-guy
+local
 .vscode
 dynamodb-migrations-cli
 .DS_Store
+examples

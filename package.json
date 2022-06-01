@@ -1,9 +1,9 @@
 {
-  "name": "@jitsecurity/dynamodb-data-migrations",
+  "name": "dynamo-data-transform",
   "version": "0.1.0-rc.1",
-  "description": "Serverless plugin for DynamoDB data migrations",
+  "description": "DynamoDB Data Transformation Tool",
   "main": "./index.js",
-  "repository": "https://github.com/jitsecurity/sls-dynamodb-data-migrations",
+  "repository": "https://github.com/jitsecurity/dynamo-data-transform",
   "author": "Guy Braunstain <guy@jit.io>",
   "contributors": [
     "Guy Braunstain (https://github.com/Guy7B)"
@@ -14,11 +14,11 @@
     "lint": "eslint ."
   },
   "bugs": {
-    "url": "https://github.com/jitsecurity/sls-dynamodb-data-migrations/issues"
+    "url": "https://github.com/jitsecurity/dynamo-data-transform/issues"
   },
-  "homepage": "https://github.com/jitsecurity/sls-dynamodb-data-migrations#readme",
+  "homepage": "https://github.com/jitsecurity/dynamo-data-transform#readme",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.82.0",
@@ -38,7 +38,7 @@
     "eslint-config-airbnb-base": "^15.0.0"
   },
   "bin": {
-    "dynamodb-data-migrations": "./cli/index.js",
-    "ddm": "./cli/index.js"
+    "dynamodt": "./cli/index.js",
+    "ddt": "./cli/index.js"
   }
 }

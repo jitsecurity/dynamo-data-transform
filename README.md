@@ -1,4 +1,4 @@
-# DynamoDB Data Migrations Tool
+# DynamoDB data transformations Tool
 
 <p>
   <a href="https://www.serverless.com">
@@ -12,7 +12,7 @@ We hope that our design will last forever, \
 however, in the real world, it might not happen. \
 Making changes in our database design is a regular process that happens sometimes.
 
-- We need to be able to execute data migrations \
+- We need to be able to execute data transformations \
   without interfering with us or our clients \
   and without losing the ability to get back to the previous state of the data.
 
@@ -20,36 +20,36 @@ Making changes in our database design is a regular process that happens sometime
 
 ## Quick Start:
 ### Serverless plugin:
-- Install the tool:
+- Install
 ```bash
-npm install dynamodb-data-migrations --save-dev
+npm install dynamo-data-transform --save-dev
 ```
-- Add the tool to your serverless.yml:
+- Add the tool to your serverless.yml
 ```YML
 plugins:
-  - dynamodb-data-migrations
+  - dynamo-data-transform
 ```
-- Run the tool:
+- Run
 ```bash
-sls migration list
+sls dynamodt list
 ```
 
 ### Standalone npm package:
-- Install the tool:
+- Install the tool
 ```bash
-npm install -g dynamodb-data-migrations
+npm install -g dynamo-data-transform
 ```
-- Run the tool:
+- Run the tool
 ```bash
-dynamodb-data-migrations --help
+dynamodt --help
 ```
-Or with the shortcut:
+Or with the shortcut
 ```bash
-ddm --help
+ddt --help
 ```
-- Use the interactive cli:
+- Use the interactive cli
 ```bash
-dynamodb-data-migrations -i
+dynamodt -i
 ```
 
 
@@ -57,11 +57,14 @@ dynamodb-data-migrations -i
 
 **Features**
 
-- Seemless data migrations management for every stage.
+- Seemless data transformations management.
+- Support for multiple stages.
+- History of executed data transformations.
+- Dry run option for each command (by suppling --dry flag, the data will be printed instead of stored).
 - Safe & Secure preparation data - \
-  Store preparation data in a private s3 bucket & .
-- Custom commands for executing data migrations from your local machine (if needed).
-- Dry run option for every command (by suppling --dry flag the data will be printed instead of stored).
+  Store preparation data in a private s3 bucket. \
+  [Prepare data for your data transformation](#usage-and-command-line-options)
+
 
 
 ## Documentation
@@ -71,10 +74,10 @@ dynamodb-data-migrations -i
 - [Installation](#installation)
 - [Usage and command-line options](#usage-and-command-line-options)
 - [What it does behind the scenes:](#what-it-does-behind-the-scenes)
-- [The data migration process:](#the-data-migration-process)
+- [The data transformation process:](#the-data-transformation-process)
   - [Steps](#steps)
     - [First Phase:](#first-phase)
-    - [The Second Phase (Data Migration):](#the-second-phase-data-migration)
+    - [The Second Phase (data transformation):](#the-second-phase-data-transformation)
   - [Key Concepts](#key-concepts)
   - [Troubleshooting](#troubleshooting)
   - [Examples](#examples)
@@ -86,57 +89,53 @@ dynamodb-data-migrations -i
 List available commands:
 Serverless plugin:
 ```bash
-sls migration --help
+sls dynamodt --help
 ```
 Standalone npm package:
 ```bash
-dynamodb-data-migrations list
+dynamodt list
 ```
 
 
 To list all of the options for a specific command run:
 Serverless plugin:
 ```bash
-sls migration <command> --help
-```
-Standalone npm package:
-```bash
-dynamodb-data-migrations <command> --help
+sls dynamotdt <command> --help
 ```
 
 ## What it does behind the scenes
-- When a data migration is running for the first time a Record in your table is created. \
-  This record is for tracking the executed migrations on a specific table.
+- When a data transformation is running for the first time a Record in your table is created. \
+  This record is for tracking the executed transformations on a specific table.
 
 
-## The data migration process
-The next section describes how the process looks like and the order of every step in the migration process.
+## The safe data transformation process
+The next section describes how the process looks like and the order of every step in the data transformation process.
 ### Steps
 #### First Phase (Add New Resources)
 1. Update the serverless.yml resources (if needed) \
    Reminder: we are not overriding existing data but creating new. [See some examples](#examples)
-1. Your new code (lambdas) should be able to write to your old and new resources which ensures that we can roll back easily to the previous state and prevent possible data gaps while updating the lambdas.
+1. Your new code should be able to write to your old and new resources which ensures that we can roll back to the previous state and prevent possible data gaps.
 1. Create a pull request and deploy it to every stage in your application
 
-#### The Second Phase (Data Migration)
+#### The Second Phase (data transformation)
 
-1. For the first time use `sls migration init` it will generate a folder per table inside the root folder of your service (The name of the folder is the exact name of the table).
-A template migration file (v1.js) will be created in each table folder. \
+1. For the first time use `sls dynamodt init` it will generate a folder per table inside the root folder of your service (The name of the folder is the exact name of the table).
+A template data transformation file (v1.js) will be created in each table folder. \
 Implement these functions:
     1. `transformUp` - transform all of the table items to the new shape (use preparationData if needed).
     1. `transformDown` - transform all of the table items to the previous shape.
-    1. `prepare` - use this function whenever your migration relies on data from external resources.
+    1. `prepare` - use this function whenever your data transformation relies on data from external resources.
 
-1. Export these functions and export the version of the current migration (set the sequence variable value. It should be the same number of the file name).
+1. Export these functions and export the version of the current data transformation (set the sequence variable value. It should be the same number of the file name).
 
-1. Preparing data from external resources for the migration can be done by using `sls migration prepare`
+1. Preparing data from external resources for the data transformation can be done by using `sls dynamodt prepare`
 
-    Run `sls migration prepare --mNumber <migration_number> --table <table>`\
-    The data will be stored encrypted in this format: {{FILE_VERSION}}.{{ENV}}.encrypted (e.g v1.local.encrypted) \
-    The data will be decrypted while running the migration script.
+    Run `sls dynamodt prepare --mNumber <transformation_number> --table <table>`\
+    The data will be stored in a S3 bucket  \
+    The data will be decrypted while running the data transformation script.
 
 1. **Final Step** Create a pull request. \
-   Note that the migration runs after an sls deploy command it is integrated \
+   Note that the data transformation runs after an sls deploy command it is integrated \
    with lifecycle of serverless `after:deploy:deploy` hook.
 
 #### The Third Phase (Use The New Resources/Data):
@@ -150,7 +149,7 @@ Implement these functions:
 
 
 ### Key Concepts 
-First of all, keep in mind that our mission is to prevent downtime while executing data migrations.
+First of all, keep in mind that our mission is to prevent downtime while executing data transformations.
 - Don't override resources/data
 - Your code should be able to work with the old version of the data and keep it updated.
 - To be continued...
@@ -159,63 +158,183 @@ First of all, keep in mind that our mission is to prevent downtime while executi
 To be continued
 
 
+### Data Transformation Script Format (e.g v1_script.js)
+```js
+const { utils } = require('dynamo-data-transform')
+
+const TABLE_NAME = 'UsersExample'
+
+const transformUp = async ({ ddb, isDryRun, preparationData }) => {
+  // your code here... 
+  // return { transformed: 50 } // return the number of transformed items
+}
+
+const transformDown = async ({ ddb, isDryRun, preparationData }) => {
+  // your code here...
+  // return { transformed: 50 } // return the number of transformed items
+}
+
+const prepare = async ({ ddb, isDryRun }) => {
+  // your code here...
+  // return { transformed: 50 } // return the number of transformed items
+}
+
+module.exports = {
+  transformUp,
+  transformDown,
+  prepare,
+  transformationNumber: 1,
+}
+```
+
+
 ### Examples
-Examples of data migration code:
+Examples of data transformation code:
+https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack/data-transformations
+
 
 #### Insert records
-https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v1_insert_users.js
+
+```js
+// Seed users data migration
+const { utils } = require('dynamo-data-transform');
+const { USERS_DATA } = require('../../usersData');
+
+const TABLE_NAME = 'UsersExample';
+
+/**
+ * @param {DynamoDBDocumentClient} ddb - dynamo db document client https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-dynamodb
+ * @param {boolean} isDryRun - true if this is a dry run
+ */
+const transformUp = async ({ ddb, isDryRun }) => {
+  return utils.insertItems(ddb, TABLE_NAME, USERS_DATA, isDryRun);
+};
+
+const transformDown = async ({ ddb, isDryRun }) => {
+  return utils.deleteItems(ddb, TABLE_NAME, USERS_DATA, isDryRun);
+};
+
+module.exports = {
+  transformUp,
+  transformDown,
+  migrationNumber: 1,
+};
+```
 
 #### Add a new field to each record
-https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v2_add_random_number_field.js
+```js
+// Adding a "randomNumber" field to each item
+const { utils } = require('dynamo-data-transform');
+
+const TABLE_NAME = 'UsersExample';
+
+const transformUp = async ({ ddb, isDryRun }) => {
+  const addRandomNumberField = (item) => {
+    const updatedItem = { ...item, randomNumber: Math.random() };
+    return updatedItem;
+  };
+  return utils.transformItems(ddb, TABLE_NAME, addRandomNumberField, isDryRun);
+};
+
+const transformDown = async ({ ddb, isDryRun }) => {
+  const removeRandomNumberField = (item) => {
+    const { randomNumber, ...oldItem } = item;
+    return oldItem;
+  };
+  return utils.transformItems(ddb, TABLE_NAME, removeRandomNumberField, isDryRun);
+};
+
+module.exports = {
+  transformUp,
+  transformDown,
+  // prepare, // pass this function only if you need preparation data for the migration
+  migrationNumber: 2,
+};
+```
 
 #### Add field using preparation data (s3 bucket)
-https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v3_using_preparation_data.js
+```js
+// Adding a new field "hasWikiPage"
+// "hasWikiPage" is a boolean field that is set to true if the item has a wiki page
+// It is calculated with a prepare function that fetches the wiki page status for each item
 
-#### Split fullname into first and last name
-https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples/demo/data-migrations/v4_split_fullname.js
+const { utils } = require('dynamo-data-transform');
 
-- Required functions to implement by the plugin user examples
-1. async transformUp
-```javascript 
-const transformUp = async (ddb, preparationData, isDryRun) => {
-  let lastEvalKey
-  do {
-    const { Items, LastEvaluatedKey } = await getItems(ddb, lastEvalKey)
-    lastEvalKey = LastEvaluatedKey
+const userAgentHeader = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+};
 
-    const updatedItems = await Promise.all(Items.map(async (item) => {
-      const itemPrimaryKey = `${item.PK}-${item.SK}`
-      const prepationDataForItem = preparationData[itemPrimaryKey]
-      const updatedItem = prepationDataForItem ? await up(item, prepationDataForItem) : item
-      return updatedItem
-    }))
+const fetch = (...args) => import('node-fetch').then(({ default: nodeFetch }) => nodeFetch(
+  ...args,
+  {
+    headers: userAgentHeader,
+  },
+));
 
-    if (!isDryRun) {
-      await save(ddb, updatedItems)
-    } else {
-      console.info(updatedItems, 'updatedItems')
-    }
-  } while (lastEvalKey)
-}
+const TABLE_NAME = 'UsersExample';
+
+const transformUp = async ({ ddb, preparationData, isDryRun }) => {
+  const addHasWikiPage = (hasWikiDict) => (item) => {
+    const valueFromPreparation = hasWikiDict[`${item.PK}-${item.SK}`];
+    const updatedItem = valueFromPreparation ? {
+      ...item,
+      hasWikiPage: valueFromPreparation,
+    } : item;
+    return updatedItem;
+  };
+
+  return utils.transformItems(
+    ddb,
+    TABLE_NAME,
+    addHasWikiPage(JSON.parse(preparationData)),
+    isDryRun,
+  );
+};
+
+const transformDown = async ({ ddb, isDryRun }) => {
+  const removeHasWikiPage = (item) => {
+    const { hasWikiPage, ...oldItem } = item;
+    return oldItem;
+  };
+
+  return utils.transformItems(ddb, TABLE_NAME, removeHasWikiPage, isDryRun);
+};
+
+const prepare = async ({ ddb }) => {
+  let lastEvalKey;
+  let preparationData = {};
+
+  let scannedAllItems = false;
+
+  while (!scannedAllItems) {
+    const { Items, LastEvaluatedKey } = await utils.getItems(ddb, lastEvalKey, TABLE_NAME);
+    lastEvalKey = LastEvaluatedKey;
+
+    const currentPreparationData = await Promise.all(Items.map(async (item) => {
+      const wikiItemUrl = `https://en.wikipedia.org/wiki/${item.name}`;
+      const currWikiResponse = await fetch(wikiItemUrl);
+      return {
+        [`${item.PK}-${item.SK}`]: currWikiResponse.status === 200,
+      };
+    }));
+
+    preparationData = {
+      ...preparationData,
+      ...currentPreparationData.reduce((acc, item) => ({ ...acc, ...item }), {}),
+    };
+
+    scannedAllItems = !lastEvalKey;
+  }
+
+  return preparationData;
+};
+
+module.exports = {
+  transformUp,
+  transformDown,
+  prepare,
+  migrationNumber: 3,
+};
 ```
 
-2. async transformDown
-```javascript
-const transformDown = async (ddb, isDryRun) => {
-  let lastEvalKey
-  do {
-    const { Items, LastEvaluatedKey } = await getItems(ddb, lastEvalKey)
-    lastEvalKey = LastEvaluatedKey
-
-    const updatedItems = await Promise.all(Items.map(async (item) => {
-      return await down(item)
-    }))
-
-    if (!isDryRun) {
-      await save(ddb, updatedItems)
-    } else {
-      console.info(updatedItems, 'updatedItems')
-    }
-  } while (lastEvalKey)
-}
-```
+For more examples of data transformation code, see the examples folder in the repository.

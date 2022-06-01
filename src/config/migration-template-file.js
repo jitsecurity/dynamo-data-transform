@@ -1,4 +1,4 @@
-const { utils } = require('@jitsecurity/dynamodb-data-migrations');
+const { utils } = require('dynamo-data-transform');
 
 const TABLE_NAME = '{{YOUR_TABLE_NAME}}';
 
@@ -35,6 +35,6 @@ module.exports = {
 
 /**
  * For more data migration scripts examples, see:
- * https://github.com/jitsecurity/dynamodb-data-migrations/tree/main/examples
+ * https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples
  *
  */

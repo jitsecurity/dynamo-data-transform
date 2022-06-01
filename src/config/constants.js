@@ -1,10 +1,10 @@
-const DATA_MIGRATIONS_FOLDER_NAME = 'data-migrations';
+const DATA_MIGRATIONS_FOLDER_NAME = 'data-transformations';
 const BASE_MIGRATIONS_FOLDER_PATH = `${process.cwd()}/${DATA_MIGRATIONS_FOLDER_NAME}`;
 const MIGRATION_SCRIPT_EXTENSION = '.js';
 const MIGRATION_NUMBER_PREFIX = 'v';
 const MIGRATION_NAME_SEPARATOR = '_';
 
-const DATA_MIGRATIONS_KEY_ID = 'DataMigrations';
+const DATA_MIGRATIONS_KEY_ID = 'DataTransformations';
 
 module.exports = {
   DATA_MIGRATIONS_FOLDER_NAME,
