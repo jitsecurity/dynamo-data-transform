@@ -4,4 +4,4 @@ dist
 local
 .vscode
 .DS_Store
-examples
+.serverless

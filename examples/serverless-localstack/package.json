@@ -1,0 +1,19 @@
+{
+  "name": "dynamo-db-data-transformation-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serverless deploy -s local",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "serverless": "^3.17.0",
+    "serverless-dotenv-plugin": "~3.9.0",
+    "serverless-localstack": "~0.4.35",
+    "serverless-manifest-plugin": "~1.0.7",
+    "serverless-pseudo-parameters": "~2.5.0"
+  },
+  "author": "Guy Braunstain <guy@jit.io>",
+  "license": "MIT"
+}

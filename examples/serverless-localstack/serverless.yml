@@ -1,0 +1,99 @@
+service: ddb-data-transformations
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  timeout: 30
+  stackName: ${self:service}-${self:provider.stage}
+  stage: ${opt:stage, 'local'}
+  region: us-east-1
+  apiGateway:
+    shouldStartNameWithService: true
+  lambdaHashingVersion: 20201221
+  environment:
+    DEPLOYMENT_STAGE: ${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    AWS_REGION_NAME: us-east-1
+    PREPARATION_DATA_BUCKET: transformations-preparation-data-${self:provider.stage}
+
+plugins:
+    - serverless-localstack
+    - serverless-manifest-plugin
+    - serverless-dotenv-plugin
+    - serverless-pseudo-parameters
+    - dynamo-data-transform
+
+custom:
+  localstack:
+    hostname:
+      local: http://localhost
+    debug: true
+    stages:
+      - local
+    host: ${self:custom.localstack.hostname.${self:provider.stage}, ''}
+    endpoints:
+      S3: ${self:custom.localstack.host}:4566
+      DynamoDB: ${self:custom.localstack.host}:4566
+      CloudFormation: ${self:custom.localstack.host}:4566
+      Lambda: ${self:custom.localstack.host}:4566
+  basePath: transformations
+  dotenv:
+    path:
+      .env.${self:provider.stage, 'local'}
+
+
+resources:
+  Resources:
+    PreparationDataBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: transformations-preparation-data-${self:provider.stage}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          IgnorePublicAcls: true
+          BlockPublicPolicy: true
+          RestrictPublicBuckets: true
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        AccessControl: "Private"
+    UsersExampleTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UsersExample
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          - AttributeName: GSI1PK
+            AttributeType: S
+          - AttributeName: GSI1SK
+            AttributeType: S
+          - AttributeName: LSI1SK
+            AttributeType: N
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: GSI1
+            KeySchema:
+              - AttributeName: GSI1PK
+                KeyType: HASH
+              - AttributeName: GSI1SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
+        LocalSecondaryIndexes:
+          - IndexName: LSI1
+            KeySchema:
+              - AttributeName: PK
+                KeyType: HASH
+              - AttributeName: LSI1SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'

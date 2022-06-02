@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  dynamodb:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://localstack:4566
+    networks:
+      - localstack-net
+
+  localstack:
+    image: localstack/localstack:0.14.2
+    ports:
+      - "4566-4583:4566-4583"
+      - "${PORT_WEB_UI-4666}:${PORT_WEB_UI-8080}"
+      - "8080:8080"
+      - "4510:4510"
+    environment:
+      - SERVICES=${SERVICES-iam,s3,s3api,lambda,apigateway,apigatewaymanagementapi,cloudwatch,events,cloudformation,sts,cognito,secretsmanager,dynamodb,ecr,sqs,ssm,sns}
+      - DATA_DIR=${DATA_DIR- }
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY- }
+      - PORT_WEB_UI=8080
+      - START_WEB=0
+      - LAMBDA_REMOTE_DOCKER=true
+      - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_REMOVE_CONTAINERS=true
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LAMBDA_DOCKER_NETWORK=localstack-net
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - LS_LOG=info
+      - DEBUG=0
+      - TMPDIR=./tmp/localstack
+      - HOST_TMP_FOLDER=${TMPDIR}
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${TMPDIR:-/tmp/localstack}"
+    networks:
+      - localstack-net
+
+networks:
+  localstack-net:
+    name: localstack-net
