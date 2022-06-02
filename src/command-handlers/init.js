@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { DATA_MIGRATIONS_FOLDER_NAME } = require('../config/constants');
+const { DATA_TRANSFORMATIONS_FOLDER_NAME } = require('../config/constants');
 
 const createFolderIfNotExist = (folderPath) => {
   if (!fs.existsSync(folderPath)) {
@@ -12,23 +12,23 @@ const createFolderIfNotExist = (folderPath) => {
 };
 
 const initHandler = async ({ tableNames }) => {
-  const baseMigrationsFolderPath = `${process.cwd()}/${DATA_MIGRATIONS_FOLDER_NAME}`;
+  const baseTransformationsFolderPath = `${process.cwd()}/${DATA_TRANSFORMATIONS_FOLDER_NAME}`;
 
-  createFolderIfNotExist(baseMigrationsFolderPath);
+  createFolderIfNotExist(baseTransformationsFolderPath);
 
   tableNames?.forEach((tableName) => {
-    const isExist = createFolderIfNotExist(`${baseMigrationsFolderPath}/${tableName}`);
+    const isExist = createFolderIfNotExist(`${baseTransformationsFolderPath}/${tableName}`);
     if (!isExist) {
-      const origin = `${__dirname}/../config/migration-template-file.js`;
-      const destination = `${baseMigrationsFolderPath}/${tableName}/v1_script-name.js`;
+      const origin = `${__dirname}/../config/transformation-template-file.js`;
+      const destination = `${baseTransformationsFolderPath}/${tableName}/v1_script-name.js`;
       const originFile = fs.readFileSync(origin, 'utf8');
       const destinationFile = originFile.replace(/{{YOUR_TABLE_NAME}}/g, tableName);
       fs.writeFile(destination, destinationFile, 'utf8', (error) => {
         if (error) {
-          console.error(`Could not write migration template file for table ${tableName}`, error);
+          console.error(`Could not write transformation template file for table ${tableName}`, error);
           throw error;
         }
-        console.info(`Migration template v1.js file has created for ${tableName}`);
+        console.info(`Transformation template v1.js file has created for ${tableName}`);
       });
     }
   });

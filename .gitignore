@@ -3,6 +3,5 @@ node_modules
 dist
 local
 .vscode
-dynamodb-migrations-cli
 .DS_Store
 examples

@@ -29,12 +29,12 @@ const transformDown = async ({ ddb, isDryRun }) => {
 module.exports = {
   transformUp,
   transformDown,
-  // prepare, // pass this function only if you need preparation data for the migration
-  migrationNumber: 1,
+  // prepare, // pass this function only if you need preparation data for the transformation
+  transformationNumber: 1,
 };
 
 /**
- * For more data migration scripts examples, see:
+ * For more data transformation scripts examples, see:
  * https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples
  *
  */

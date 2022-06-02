@@ -1,7 +1,7 @@
-const migrationsExecutionManager = require('./migrations-executions-manager');
+const transformationsExecutionManager = require('./transformations-executions-manager');
 const errorHandlers = require('./errorHandlers');
 
 module.exports = {
-  ...migrationsExecutionManager,
+  ...transformationsExecutionManager,
   ...errorHandlers,
 };

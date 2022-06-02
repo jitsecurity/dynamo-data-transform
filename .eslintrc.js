@@ -28,10 +28,27 @@ module.exports = {
     'import/no-dynamic-require': 'off',
     'global-require': 'off',
     'no-restricted-syntax': 'off',
+    'max-len': [
+      'error',
+      {
+        code: 120,
+        ignoreComments: true,
+        ignoreRegExpLiterals: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+      },
+    ],
   },
   overrides: [
     {
       files: ['*template-file.js'],
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
+        'import/no-unresolved': 'off',
+      },
+    },
+    {
+      files: ['*.js'],
       rules: {
         'import/no-extraneous-dependencies': 'off',
         'import/no-unresolved': 'off',

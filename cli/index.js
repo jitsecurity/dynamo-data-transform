@@ -9,7 +9,7 @@ const { HELP_COMMANDS } = require('./cli-commands');
 const commandAliases = {
   dry: 'd',
   table: 't',
-  mNumber: 'm',
+  tNumber: 'tnum',
   tableNames: 'n',
   interactive: 'i',
 };
@@ -18,7 +18,7 @@ const options = parseArgs(process.argv.slice(2),{
   alias: commandAliases,
   boolean: ['dry', 'interactive', 'help'],
   string: ['table', 'tableNames'],
-  number: ['mNumber'],
+  number: ['tNumber'],
 });
 
 (() => {
@@ -44,7 +44,7 @@ const options = parseArgs(process.argv.slice(2),{
       console.info(`"${command}" command run successfully.`);
       process.exit(0);
     }).catch((error) => {
-      console.error(error, `An error has occured while running migration (${command}).`);
+      console.error(error, `An error has occured while running transformation (${command}).`);
       process.exit(1);
     });
   }

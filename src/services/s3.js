@@ -23,7 +23,7 @@ const uploadDataToS3Bucket = async (filePath, body) => {
     }
     const s3Client = getS3Client();
     const command = new PutObjectCommand({
-      Bucket: process.env.PREPARATION_DATA_BUCKET || 'migrations-preparation-data-rocket',
+      Bucket: process.env.PREPARATION_DATA_BUCKET || 'transformations-preparation-data',
       Key: filePath,
       Body: body,
       ServerSideEncryption: 'AES256',
@@ -62,7 +62,7 @@ const getS3ObjectPromisified = (Bucket, Key) => {
 const getDataFromS3Bucket = async (filePath) => {
   try {
     const content = await getS3ObjectPromisified(
-      process.env.PREPARATION_DATA_BUCKET || 'migrations-preparation-data',
+      process.env.PREPARATION_DATA_BUCKET || 'transformations-preparation-data',
       filePath,
     );
     if (!content) {

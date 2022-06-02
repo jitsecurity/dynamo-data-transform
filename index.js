@@ -1,3 +1,5 @@
-const SlsPluginDynamodbDataMigrations = require('./serverless-plugin/sls-plugin');
+const SlsDynamoDataTransformationsPlugin = require('./serverless-plugin/sls-plugin');
+const utils = require('./src/utils');
 
-module.exports = SlsPluginDynamodbDataMigrations;
+module.exports = SlsDynamoDataTransformationsPlugin;
+module.exports.utils = utils;

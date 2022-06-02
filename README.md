@@ -130,7 +130,7 @@ Implement these functions:
 
 1. Preparing data from external resources for the data transformation can be done by using `sls dynamodt prepare`
 
-    Run `sls dynamodt prepare --mNumber <transformation_number> --table <table>`\
+    Run `sls dynamodt prepare --tNumber <transformation_number> --table <table>`\
     The data will be stored in a S3 bucket  \
     The data will be decrypted while running the data transformation script.
 
@@ -155,8 +155,20 @@ First of all, keep in mind that our mission is to prevent downtime while executi
 - To be continued...
 
 ### Troubleshooting
-To be continued
+Credentials error:
+#### Required environment variables: #Move it to the tool docs
+```bash
+# configure aws credentials aws configure or use environment variables
+export AWS_ACCESS_KEY_ID=<your-access-key-id>
+export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
+export AWS_DEFAULT_REGION=<your-region>
 
+#[OPTIONAL] 
+# Required for preparing data for the migration
+# The default is migrations-preparation-data
+# Make sure you have created the bucket before running the migration
+export PREPARATION_DATA_BUCKET=<your-bucket-name>
+```
 
 ### Data Transformation Script Format (e.g v1_script.js)
 ```js
@@ -182,7 +194,7 @@ const prepare = async ({ ddb, isDryRun }) => {
 module.exports = {
   transformUp,
   transformDown,
-  prepare,
+  prepare, // optional
   transformationNumber: 1,
 }
 ```
@@ -196,7 +208,7 @@ https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverle
 #### Insert records
 
 ```js
-// Seed users data migration
+// Seed users data transformation
 const { utils } = require('dynamo-data-transform');
 const { USERS_DATA } = require('../../usersData');
 
@@ -217,38 +229,38 @@ const transformDown = async ({ ddb, isDryRun }) => {
 module.exports = {
   transformUp,
   transformDown,
-  migrationNumber: 1,
+  transformationNumber: 1,
 };
 ```
 
 #### Add a new field to each record
 ```js
-// Adding a "randomNumber" field to each item
+// Adding a "randotNumber" field to each item
 const { utils } = require('dynamo-data-transform');
 
 const TABLE_NAME = 'UsersExample';
 
 const transformUp = async ({ ddb, isDryRun }) => {
-  const addRandomNumberField = (item) => {
-    const updatedItem = { ...item, randomNumber: Math.random() };
+  const addRandotNumberField = (item) => {
+    const updatedItem = { ...item, randotNumber: Math.random() };
     return updatedItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, addRandomNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, addRandotNumberField, isDryRun);
 };
 
 const transformDown = async ({ ddb, isDryRun }) => {
-  const removeRandomNumberField = (item) => {
-    const { randomNumber, ...oldItem } = item;
+  const removeRandotNumberField = (item) => {
+    const { randotNumber, ...oldItem } = item;
     return oldItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, removeRandomNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, removeRandotNumberField, isDryRun);
 };
 
 module.exports = {
   transformUp,
   transformDown,
-  // prepare, // pass this function only if you need preparation data for the migration
-  migrationNumber: 2,
+  // prepare, // pass this function only if you need preparation data for the transformation
+  transformationNumber: 2,
 };
 ```
 
@@ -333,7 +345,7 @@ module.exports = {
   transformUp,
   transformDown,
   prepare,
-  migrationNumber: 3,
+  transformationNumber: 4,
 };
 ```
 

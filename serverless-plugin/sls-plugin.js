@@ -2,15 +2,13 @@ const {
   init, up, down, prepare, history: getHistory,
 } = require('../src/command-handlers');
 const commands = require('./commands');
-const utils = require('../src/utils'); // export from core package
 const { getTableNames } = require('./sls-resources-parser');
 
-class ServerlessDynamoMigrations {
-  static utils = utils;
+class SlsDynamoDataTransformationsPlugin {
   constructor(serverless, options) {
     this.serverless = serverless;
     this.provider = serverless.getProvider('aws');
-    this.log = (message) => serverless.cli.log.bind(serverless.cli)(`Migrations - ${message}`);
+    this.log = (message) => serverless.cli.log.bind(serverless.cli)(`Transformations - ${message}`);
     this.options = options;
     this.commands = commands;
 
@@ -19,11 +17,11 @@ class ServerlessDynamoMigrations {
     process.env.AWS_REGION = region;
     this.hooks = {
       'after:deploy:deploy': this.up.bind(this),
-      'migration:init:init': this.init.bind(this),
-      'migration:prepare:prepare': this.prepare.bind(this),
-      'migration:up:migrate': this.up.bind(this),
-      'migration:down:rollback': this.rollback.bind(this),
-      'migration:history:history': this.getHistory.bind(this),
+      'dynamodt:init:init': this.init.bind(this),
+      'dynamodt:prepare:prepare': this.prepare.bind(this),
+      'dynamodt:up:transform': this.up.bind(this),
+      'dynamodt:down:rollback': this.rollback.bind(this),
+      'dynamodt:history:history': this.getHistory.bind(this),
     };
   }
 
@@ -34,7 +32,7 @@ class ServerlessDynamoMigrations {
     return init({ tableNames }).then(() => {
       console.info('"init" command ran successfully.');
     }).catch((error) => {
-      console.error('An error has occured while running migration (init).', error.message);
+      console.error('An error has occured while running dynamodt (init).', error.message);
     });
   }
 
@@ -42,7 +40,7 @@ class ServerlessDynamoMigrations {
     return prepare(this.options).then(() => {
       console.info('"prepare" command ran successfully.');
     }).catch((error) => {
-      console.error('An error has occured while preparing data for migration.', error.message);
+      console.error('An error has occured while running dynamodt (prepare).', error.message);
     });
   }
 
@@ -50,7 +48,7 @@ class ServerlessDynamoMigrations {
     return up(this.options).then(() => {
       console.info('"up" command ran successfully.');
     }).catch((error) => {
-      console.error('An error has occured while running migration (up).', error.message);
+      console.error('An error has occured while running dynamodt (up).', error.message);
     });
   }
 
@@ -58,7 +56,7 @@ class ServerlessDynamoMigrations {
     return down(this.options).then(() => {
       console.info('"down" command run successfully.');
     }).catch((error) => {
-      console.error('An error has occured while running migration (down).', error.message);
+      console.error('An error has occured while running dynamodt (down).', error.message);
     });
   }
 
@@ -66,9 +64,9 @@ class ServerlessDynamoMigrations {
     return getHistory(this.options).then(() => {
       console.info('"history" command run successfully.');
     }).catch((error) => {
-      console.error('An error has occured while running migration (history).', error.message);
+      console.error('An error has occured while running dynamodt (history).', error.message);
     });
   }
 }
 
-module.exports = ServerlessDynamoMigrations;
+module.exports = SlsDynamoDataTransformationsPlugin;

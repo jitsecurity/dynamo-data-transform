@@ -1,61 +1,61 @@
 const path = require('path');
 const fs = require('fs').promises;
-const { getLatestDataMigrationNumber, hasMigrationRun, syncMigrationRecord } = require('../services/dynamodb/migrations-executions-manager');
+const { getlatestDataTransformationNumber, hasTransformationRun, syncTransformationRecord } = require('../services/dynamodb/transformations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
 const { getDataFromS3Bucket } = require('../services/s3');
-const { BASE_MIGRATIONS_FOLDER_PATH, MIGRATION_SCRIPT_EXTENSION } = require('../config/constants');
+const { BASE_TRANSFORMATIONS_FOLDER_PATH, TRANSFORMATION_SCRIPT_EXTENSION } = require('../config/constants');
 const { ddbErrorsWrapper } = require('../services/dynamodb');
-const { parseMigrationFileNumber, getTableDataMigrationFiles } = require('../data-migration-script-explorer');
+const { parseTransformationFileNumber, getTableDataTransformationFiles } = require('../data-transformation-script-explorer');
 
-const executeDataMigration = async (ddb, migration, table, isDryRun) => {
-  const { migrationNumber, transformUp, prepare } = migration;
-  const isMigrationRun = await hasMigrationRun(ddb, migrationNumber, table);
+const executeDataTransformation = async (ddb, transformation, table, isDryRun) => {
+  const { transformationNumber, transformUp, prepare } = transformation;
+  const isTransformationRun = await hasTransformationRun(ddb, transformationNumber, table);
 
-  if (!isMigrationRun) {
+  if (!isTransformationRun) {
     let preparationData = {};
     const shouldUsePreparationData = Boolean(prepare);
     if (shouldUsePreparationData) {
-      const preparationFilePath = `${table}/v${migrationNumber}`;
+      const preparationFilePath = `${table}/v${transformationNumber}`;
       preparationData = await getDataFromS3Bucket(preparationFilePath);
-      console.info('Running data migration script using preparation data');
+      console.info('Running data transformation script using preparation data');
     }
 
     const transformationResponse = await transformUp({ ddb, preparationData, isDryRun });
     if (!isDryRun) {
-      await syncMigrationRecord(ddb, migrationNumber, table, transformationResponse?.transformed);
+      await syncTransformationRecord(ddb, transformationNumber, table, transformationResponse?.transformed);
     } else {
       console.info("It's a dry run");
     }
   } else {
-    console.info(`Data Migration script ${migrationNumber} has already been executed for table ${table}`);
+    console.info(`Data Transformation script ${transformationNumber} has already been executed for table ${table}`);
   }
 };
 
-const isGreaterThanLatestMigrationNumber = (fileName, latestDataMigrationNumber) => {
-  const migrationFileNumber = parseMigrationFileNumber(fileName);
-  return migrationFileNumber > latestDataMigrationNumber;
+const isGreaterThanLatesttransformationNumber = (fileName, latestDataTransformationNumber) => {
+  const transformationFileNumber = parseTransformationFileNumber(fileName);
+  return transformationFileNumber > latestDataTransformationNumber;
 };
 
-const getScriptsToExecuteForTable = async (table, latestDataMigrationNumber) => {
+const getScriptsToExecuteForTable = async (table, latestDataTransformationNumber) => {
   try {
-    const migrationFiles = await getTableDataMigrationFiles(table);
+    const transformationFiles = await getTableDataTransformationFiles(table);
 
-    const currentMigrationFiles = migrationFiles.filter((fileName) => {
-      const isJsFile = path.extname(fileName) === MIGRATION_SCRIPT_EXTENSION;
-      return isJsFile && isGreaterThanLatestMigrationNumber(fileName, latestDataMigrationNumber);
+    const currentTransformationFiles = transformationFiles.filter((fileName) => {
+      const isJsFile = path.extname(fileName) === TRANSFORMATION_SCRIPT_EXTENSION;
+      return isJsFile && isGreaterThanLatesttransformationNumber(fileName, latestDataTransformationNumber);
     });
 
-    const sortedMigrationFiles = currentMigrationFiles.sort();
+    const sortedTransformationFiles = currentTransformationFiles.sort();
 
-    const scriptsToExecute = sortedMigrationFiles
+    const scriptsToExecute = sortedTransformationFiles
       .map((fileName) => require(
-        path.join(BASE_MIGRATIONS_FOLDER_PATH, table, fileName),
+        path.join(BASE_TRANSFORMATIONS_FOLDER_PATH, table, fileName),
       ));
 
-    console.info(`Number of data migration scripts to execute - ${scriptsToExecute.length} for table ${table}.`);
+    console.info(`Number of data transformation scripts to execute - ${scriptsToExecute.length} for table ${table}.`);
     return scriptsToExecute;
   } catch (error) {
-    console.error(`Could not get data migrations scripts for current table - ${table}, latest data migration number: ${latestDataMigrationNumber}`);
+    console.error(`Could not get data transformations scripts for current table - ${table}, latest data transformation number: ${latestDataTransformationNumber}`);
     throw error;
   }
 };
@@ -63,19 +63,19 @@ const getScriptsToExecuteForTable = async (table, latestDataMigrationNumber) => 
 const up = async ({ dry: isDryRun }) => {
   const ddb = getDynamoDBClient();
 
-  const tables = await fs.readdir(BASE_MIGRATIONS_FOLDER_PATH);
-  console.info(`Available tables for migration: ${tables || 'No tables found'}.`);
+  const tables = await fs.readdir(BASE_TRANSFORMATIONS_FOLDER_PATH);
+  console.info(`Available tables for transformation: ${tables || 'No tables found'}.`);
 
   return Promise.all(tables.map(async (table) => {
-    const latestDataMigrationNumber = await getLatestDataMigrationNumber(ddb, table);
-    const migrationsToExecute = await getScriptsToExecuteForTable(
+    const latestDataTransformationNumber = await getlatestDataTransformationNumber(ddb, table);
+    const transformationsToExecute = await getScriptsToExecuteForTable(
       table,
-      latestDataMigrationNumber,
+      latestDataTransformationNumber,
     );
 
-    for (const migration of migrationsToExecute) {
-      console.info('Started data migration ', migration.migrationNumber, table);
-      await executeDataMigration(ddb, migration, table, isDryRun);
+    for (const transformation of transformationsToExecute) {
+      console.info('Started data transformation ', transformation.transformationNumber, table);
+      await executeDataTransformation(ddb, transformation, table, isDryRun);
     }
   }));
 };

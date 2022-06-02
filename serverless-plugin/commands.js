@@ -13,8 +13,8 @@ const COMMAND_OPTIONS = {
     required: true,
     type: 'string',
   },
-  mNumber: {
-    usage: 'Specify the version of current migration (e.g. "--mNumber 1")',
+  tNumber: {
+    usage: 'Specify the version of current transformation (e.g. "--tNumber 1")',
     required: true,
     type: 'number',
   },
@@ -24,31 +24,31 @@ const COMMAND_OPTIONS = {
 };
 
 module.exports = {
-  migration: {
-    usage: 'Runs database migrations',
+  dynamodt: {
+    usage: 'Run data transformations',
     commands: {
       init: {
-        usage: `sls migration init - ${COMMAND_DESCRIPTION.init}`,
+        usage: `sls dynamodt init - ${COMMAND_DESCRIPTION.init}`,
         lifecycleEvents: ['init'],
       },
       up: {
-        usage: `sls migration up - ${COMMAND_DESCRIPTION.up}`,
-        lifecycleEvents: ['migrate'],
+        usage: `sls dynamodt up - ${COMMAND_DESCRIPTION.up}`,
+        lifecycleEvents: ['transform'],
         options: {
           dry: COMMAND_OPTIONS.dry,
         },
       },
       prepare: {
-        usage: `"sls migration prepare --table {{TABLE_NAME}} --mNumber 1" - ${COMMAND_DESCRIPTION.prepare}`,
+        usage: `"sls dynamodt prepare --table {{TABLE_NAME}} --tNumber 1" - ${COMMAND_DESCRIPTION.prepare}`,
         lifecycleEvents: ['prepare'],
         options: {
-          mNumber: COMMAND_OPTIONS.mNumber,
+          tNumber: COMMAND_OPTIONS.tNumber,
           dry: COMMAND_OPTIONS.dry,
           table: COMMAND_OPTIONS.table,
         },
       },
       down: {
-        usage: `sls migration down --table {{TABLE_NAME}} - ${COMMAND_DESCRIPTION.down}`,
+        usage: `sls dynamodt down --table {{TABLE_NAME}} - ${COMMAND_DESCRIPTION.down}`,
         lifecycleEvents: ['rollback'],
         options: {
           table: COMMAND_OPTIONS.table,
@@ -56,7 +56,7 @@ module.exports = {
         },
       },
       history: {
-        usage: `sls migration history --table {{TABLE_NAME}} -  ${COMMAND_DESCRIPTION.history}`,
+        usage: `sls dynamodt history --table {{TABLE_NAME}} -  ${COMMAND_DESCRIPTION.history}`,
         lifecycleEvents: ['history'],
         options: {
           table: COMMAND_OPTIONS.table,

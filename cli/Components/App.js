@@ -14,8 +14,8 @@ const App = () => {
 
   return (
     <>
-      <BigTextErrorBoundary text={'Data Migration Tool'} key={'keyfortitle'}>
-        <Title text='Data Migration Tool' />
+      <BigTextErrorBoundary text='Dynamo Data Transform' key='keyfortitle'>
+        <Title text='Dynamo Data Transform' />
       </BigTextErrorBoundary>
       <Newline />
       {selection ? (

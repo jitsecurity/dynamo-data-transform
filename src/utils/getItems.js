@@ -1,8 +1,8 @@
 const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
-const { DATA_MIGRATIONS_KEY_ID } = require('../config/constants');
+const { DATA_TRANSFORMATIONS_KEY_ID } = require('../config/constants');
 
-const filterMigrationRecord = (items) => {
-  return items.filter((item) => !Object.values(item).includes(DATA_MIGRATIONS_KEY_ID));
+const filterTransformationRecord = (items) => {
+  return items.filter((item) => !Object.values(item).includes(DATA_TRANSFORMATIONS_KEY_ID));
 };
 
 const getItems = async (ddb, lastEvalKey, tableName) => {
@@ -14,7 +14,7 @@ const getItems = async (ddb, lastEvalKey, tableName) => {
 
   const scanCommand = new ScanCommand(params);
   const scanResponse = await ddb.send(scanCommand);
-  scanResponse.Items = filterMigrationRecord(scanResponse.Items);
+  scanResponse.Items = filterTransformationRecord(scanResponse.Items);
 
   return scanResponse;
 };

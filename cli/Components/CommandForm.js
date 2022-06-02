@@ -47,7 +47,7 @@ const CommandForm = ({ selection, setSelection }) => {
     script(params).then(() => {
       setSelection(null);
     }).catch((error) => {
-      console.error(error, `An error has occured while running migration (${selection}).`);
+      console.error(error, `An error has occured while running transformation (${selection}).`);
     });
   };
 

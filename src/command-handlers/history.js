@@ -1,11 +1,11 @@
-const { getMigrationsRunHistory } = require('../services/dynamodb/migrations-executions-manager');
+const { getTransformationsRunHistory } = require('../services/dynamodb/transformations-executions-manager');
 const { getDynamoDBClient } = require('../clients');
 const { ddbErrorsWrapper } = require('../services/dynamodb');
 
 const getHistory = async ({ table }) => {
   const ddb = getDynamoDBClient();
 
-  const history = await getMigrationsRunHistory(ddb, table);
+  const history = await getTransformationsRunHistory(ddb, table);
 
   console.info(`History for table ${table}`);
   const sortedHistory = Object.keys(history)
@@ -13,7 +13,7 @@ const getHistory = async ({ table }) => {
     .map((key) => ({
       Date: new Date(key).toLocaleString(),
       Command: history[key].executedCommand,
-      'Migration Number': history[key].migrationNumber,
+      'Transformation Number': history[key].transformationNumber,
     }));
 
   console.table(sortedHistory);

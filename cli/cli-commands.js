@@ -7,8 +7,8 @@ const COMMAND_OPTIONS = {
   table: {
     type: 'string', name: 'table', label: 'Specify table name', initialValue: '',
   },
-  mNumber: {
-    type: 'string', name: 'mNumber', label: 'Specify the version of current migration number',
+  tNumber: {
+    type: 'string', name: 'tNumber', label: 'Specify the version of current transformation number',
   },
   tableNames: {
     type: 'string', name: 'tableNames', label: 'Specify table names e.g "table1, table2"', initialValue: '',
@@ -24,11 +24,11 @@ const CLI_COMMANDS = {
 };
 
 const HELP_COMMANDS = {
-  up: 'ddm up',
-  down: 'ddm down --table <table>',
-  history: 'ddm history --table <table>',
-  prepare: 'ddm prepare --table <table> --mNumber <migration_number>',
-  init: 'ddm init --tableNames <table_names>',
+  up: 'ddt up',
+  down: 'ddt down --table <table>',
+  history: 'ddt history --table <table>',
+  prepare: 'ddt prepare --table <table> --tNumber <transformation_number>',
+  init: 'ddt init --tableNames <table_names>',
 };
 
 const CLI_FORM = {
@@ -49,7 +49,7 @@ const CLI_FORM = {
     title: 'Preparetion Parameters',
     fields: [
       COMMAND_OPTIONS.table,
-      COMMAND_OPTIONS.mNumber,
+      COMMAND_OPTIONS.tNumber,
       COMMAND_OPTIONS.dry,
     ],
   },
