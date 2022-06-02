@@ -1,4 +1,5 @@
-# DynamoDB data transformations Tool
+![ddt_graphic1x](https://user-images.githubusercontent.com/101042972/171440725-b9e7bad8-11d8-4202-965a-96d1f5d9b2b1.jpg)
+
 
 <p>
   <a href="https://www.serverless.com">
@@ -6,20 +7,24 @@
   </a>
 </p>
 
-## Introduction: 
-- We design our databases schemas and define how we want to store the data inside. \
-We hope that our design will last forever, \
-however, in the real world, it might not happen. \
-Making changes in our database design is a regular process that happens sometimes.
+Dynamo Data Transform is an easy to use data transformation tool for DynamoDB.
 
-- We need to be able to execute data transformations \
-  without interfering with us or our clients \
-  and without losing the ability to get back to the previous state of the data.
+It allows performing powerful data transformations using simple Javascript commands, without the risk of breaking your database.
+Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalone-npm-package) and even as an [interactive CLI](#interactive-cli), Dynamo Data Transform saves you time and keeps you safe with features like dry-running a data transformation and even rolling back your last trasnformation if needed.
 
-![:)](./docs/images/undraw_data_extraction_re_0rd3.svg)
+![cli-image](https://user-images.githubusercontent.com/101042972/171456161-fe2437b7-06be-4106-a0e0-acbf7d442a60.JPG)
 
-## Quick Start:
-### Serverless plugin:
+**Features**
+
+- Seemless data transformations management.
+- Support for multiple stages.
+- History of executed data transformations.
+- Dry run option for each command (by suppling --dry flag, the data will be printed instead of stored).
+- Safe & Secure preparation data
+- Store preparation data in a private s3 bucket. [Prepare data for your data transformation](#usage-and-command-line-options)
+
+## Quick Start
+### Serverless plugin
 - Install
 ```bash
 npm install dynamo-data-transform --save-dev
@@ -34,7 +39,7 @@ plugins:
 sls dynamodt list
 ```
 
-### Standalone npm package:
+### Standalone npm package
 - Install the tool
 ```bash
 npm install -g dynamo-data-transform
@@ -47,7 +52,8 @@ Or with the shortcut
 ```bash
 ddt --help
 ```
-- Use the interactive cli
+### Interactive CLI
+After installing the npm package, run:
 ```bash
 dynamodt -i
 ```
@@ -55,29 +61,17 @@ dynamodt -i
 
 
 
-**Features**
-
-- Seemless data transformations management.
-- Support for multiple stages.
-- History of executed data transformations.
-- Dry run option for each command (by suppling --dry flag, the data will be printed instead of stored).
-- Safe & Secure preparation data - \
-  Store preparation data in a private s3 bucket. \
-  [Prepare data for your data transformation](#usage-and-command-line-options)
 
 
 
-## Documentation
 
-- [Introduction:](#introduction)
-- [Documentation](#documentation)
-- [Installation](#installation)
+## Table of contents
+
+- [Quick Start](#quick-start)
 - [Usage and command-line options](#usage-and-command-line-options)
-- [What it does behind the scenes:](#what-it-does-behind-the-scenes)
-- [The data transformation process:](#the-data-transformation-process)
-  - [Steps](#steps)
-    - [First Phase:](#first-phase)
-    - [The Second Phase (data transformation):](#the-second-phase-data-transformation)
+- [What happens behind the scenes](#what-happens-behind-the-scenes)
+- [The data transformation process](#the-data-transformation-process)
+  - [Process Steps](#steps)
   - [Key Concepts](#key-concepts)
   - [Troubleshooting](#troubleshooting)
   - [Examples](#examples)
@@ -103,21 +97,20 @@ Serverless plugin:
 sls dynamotdt <command> --help
 ```
 
-## What it does behind the scenes
-- When a data transformation is running for the first time a Record in your table is created. \
-  This record is for tracking the executed transformations on a specific table.
+## What happens behind the scenes
+- When a data transformation runs for the first time, a record in your table is created. This record is for tracking the executed transformations on a specific table.
 
 
 ## The safe data transformation process
-The next section describes how the process looks like and the order of every step in the data transformation process.
+The next section describes how the data transformation process looks like, and the order of each step.
 ### Steps
-#### First Phase (Add New Resources)
+#### 1st Phase (Add New Resources)
 1. Update the serverless.yml resources (if needed) \
    Reminder: we are not overriding existing data but creating new. [See some examples](#examples)
 1. Your new code should be able to write to your old and new resources which ensures that we can roll back to the previous state and prevent possible data gaps.
 1. Create a pull request and deploy it to every stage in your application
 
-#### The Second Phase (data transformation)
+#### 2nd Phase (data transformation)
 
 1. For the first time use `sls dynamodt init` it will generate a folder per table inside the root folder of your service (The name of the folder is the exact name of the table).
 A template data transformation file (v1.js) will be created in each table folder. \
@@ -138,13 +131,13 @@ Implement these functions:
    Note that the data transformation runs after an sls deploy command it is integrated \
    with lifecycle of serverless `after:deploy:deploy` hook.
 
-#### The Third Phase (Use The New Resources/Data):
+#### 3rd Phase (Use The New Resources/Data)
 1. Adjust your code to work with the new data. \
    For example, read from the new index instead of the old one.
 1. Create a pull request with the updated lambdas.
 
 
-#### The Fourth Phase (Cleanup):
+#### 4th Phase (Cleanup)
 1. Clean the unused data (attributes/indexes/etc). 
 
 
@@ -154,21 +147,7 @@ First of all, keep in mind that our mission is to prevent downtime while executi
 - Your code should be able to work with the old version of the data and keep it updated.
 - To be continued...
 
-### Troubleshooting
-Credentials error:
-#### Required environment variables: #Move it to the tool docs
-```bash
-# configure aws credentials aws configure or use environment variables
-export AWS_ACCESS_KEY_ID=<your-access-key-id>
-export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
-export AWS_DEFAULT_REGION=<your-region>
 
-#[OPTIONAL] 
-# Required for preparing data for the migration
-# The default is migrations-preparation-data
-# Make sure you have created the bucket before running the migration
-export PREPARATION_DATA_BUCKET=<your-bucket-name>
-```
 
 ### Data Transformation Script Format (e.g v1_script.js)
 ```js
@@ -235,25 +214,25 @@ module.exports = {
 
 #### Add a new field to each record
 ```js
-// Adding a "randotNumber" field to each item
+// Adding a "randomNumber" field to each item
 const { utils } = require('dynamo-data-transform');
 
 const TABLE_NAME = 'UsersExample';
 
 const transformUp = async ({ ddb, isDryRun }) => {
-  const addRandotNumberField = (item) => {
-    const updatedItem = { ...item, randotNumber: Math.random() };
+  const addRandomNumberField = (item) => {
+    const updatedItem = { ...item, randomNumber: Math.random() };
     return updatedItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, addRandotNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, addRandomNumberField, isDryRun);
 };
 
 const transformDown = async ({ ddb, isDryRun }) => {
-  const removeRandotNumberField = (item) => {
-    const { randotNumber, ...oldItem } = item;
+  const removeRandomNumberField = (item) => {
+    const { randomNumber, ...oldItem } = item;
     return oldItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, removeRandotNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, removeRandomNumberField, isDryRun);
 };
 
 module.exports = {

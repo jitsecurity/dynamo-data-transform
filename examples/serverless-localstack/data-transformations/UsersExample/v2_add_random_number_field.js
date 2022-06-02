@@ -1,22 +1,22 @@
-// Adding a "randotNumber" field to each item
+// Adding a "randomNumber" field to each item
 const { utils } = require('dynamo-data-transform');
 
 const TABLE_NAME = 'UsersExample';
 
 const transformUp = async ({ ddb, isDryRun }) => {
-  const addRandotNumberField = (item) => {
-    const updatedItem = { ...item, randotNumber: Math.random() };
+  const addRandomNumberField = (item) => {
+    const updatedItem = { ...item, randomNumber: Math.random() };
     return updatedItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, addRandotNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, addRandomNumberField, isDryRun);
 };
 
 const transformDown = async ({ ddb, isDryRun }) => {
-  const removeRandotNumberField = (item) => {
-    const { randotNumber, ...oldItem } = item;
+  const removeRandomNumberField = (item) => {
+    const { randomNumber, ...oldItem } = item;
     return oldItem;
   };
-  return utils.transformItems(ddb, TABLE_NAME, removeRandotNumberField, isDryRun);
+  return utils.transformItems(ddb, TABLE_NAME, removeRandomNumberField, isDryRun);
 };
 
 module.exports = {
