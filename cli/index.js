@@ -23,7 +23,7 @@ const options = parseArgs(process.argv.slice(2),{
 
 (() => {
   const [command] = options._;
-  if(command === 'list') {
+  if(command === 'help' || !command) {
     console.info('Available commands:');
     Object.entries(COMMAND_DESCRIPTION).forEach(([key, value]) => {
       console.info(`  ${key} - ${value}\n`);
