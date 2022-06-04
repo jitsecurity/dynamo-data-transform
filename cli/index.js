@@ -36,23 +36,21 @@ const showHelp = () => {
   }
 
   const [command] = options._;
-  if(command === 'help') {
+  if(command === 'help' || !command) {
     showHelp();
     process.exit(0);
   }
 
-  if (command) {
-    if(options.help) {
-      console.info(HELP_COMMANDS[command]);
-      process.exit(0);
-    }
-    scripts[command](options).then(() => {
-      console.info(`"${command}" command run successfully.`);
-      process.exit(0);
-    }).catch((error) => {
-      console.error(error, `An error has occured while running command (${command}).`);
-      process.exit(1);
-    });
+  if(options.help) {
+    console.info(HELP_COMMANDS[command]);
+    process.exit(0);
   }
+  scripts[command](options).then(() => {
+    console.info(`"${command}" command run successfully.`);
+    process.exit(0);
+  }).catch((error) => {
+    console.error(error, `An error has occured while running command (${command}).`);
+    process.exit(1);
+  });
 
 })();
