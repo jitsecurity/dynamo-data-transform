@@ -39,7 +39,7 @@ module.exports = {
         },
       },
       prepare: {
-        usage: `"sls dynamodt prepare --table {{TABLE_NAME}} --tNumber 1" - ${COMMAND_DESCRIPTION.prepare}`,
+        usage: `"sls dynamodt prepare --table <table> --tNumber <transformation_number>" - ${COMMAND_DESCRIPTION.prepare}`,
         lifecycleEvents: ['prepare'],
         options: {
           tNumber: COMMAND_OPTIONS.tNumber,
@@ -48,7 +48,7 @@ module.exports = {
         },
       },
       down: {
-        usage: `sls dynamodt down --table {{TABLE_NAME}} - ${COMMAND_DESCRIPTION.down}`,
+        usage: `sls dynamodt down --table <table> - ${COMMAND_DESCRIPTION.down}`,
         lifecycleEvents: ['rollback'],
         options: {
           table: COMMAND_OPTIONS.table,
@@ -56,7 +56,7 @@ module.exports = {
         },
       },
       history: {
-        usage: `sls dynamodt history --table {{TABLE_NAME}} -  ${COMMAND_DESCRIPTION.history}`,
+        usage: `sls dynamodt history --table <table> -  ${COMMAND_DESCRIPTION.history}`,
         lifecycleEvents: ['history'],
         options: {
           table: COMMAND_OPTIONS.table,

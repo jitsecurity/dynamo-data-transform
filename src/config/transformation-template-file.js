@@ -29,7 +29,7 @@ const transformDown = async ({ ddb, isDryRun }) => {
 module.exports = {
   transformUp,
   transformDown,
-  // prepare, // pass this function only if you need preparation data for the transformation
+  // prepare, // export this function only if you need preparation data for the transformation
   transformationNumber: 1,
 };
 

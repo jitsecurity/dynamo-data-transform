@@ -17,12 +17,11 @@ provider:
     PREPARATION_DATA_BUCKET: transformations-preparation-data-${self:provider.stage}
 
 plugins:
-    - serverless-localstack
-    - serverless-manifest-plugin
-    - serverless-dotenv-plugin
-    - serverless-pseudo-parameters
-    - dynamo-data-transform
-
+  - serverless-localstack
+  - serverless-manifest-plugin
+  - serverless-dotenv-plugin
+  - serverless-pseudo-parameters
+  - dynamo-data-transform
 custom:
   localstack:
     hostname:

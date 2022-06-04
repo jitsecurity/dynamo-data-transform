@@ -21,33 +21,38 @@ const options = parseArgs(process.argv.slice(2),{
   number: ['tNumber'],
 });
 
+const showHelp = () => {
+  console.info('Available commands:');
+  Object.entries(COMMAND_DESCRIPTION).forEach(([key, value]) => {
+    console.info(`  ${key} - ${value}\n`);
+  });
+};
+
 (() => {
-  const [command] = options._;
-  if(command === 'help' || !command) {
-    console.info('Available commands:');
-    Object.entries(COMMAND_DESCRIPTION).forEach(([key, value]) => {
-      console.info(`  ${key} - ${value}\n`);
-    });
-
-    return;
-  }
-
   if (options.interactive) {
     const importJsx = require('import-jsx');
     importJsx('./Components/App');
-  } else {
+    process.exit(0);
+  }
+
+  const [command] = options._;
+  if(command === 'help') {
+    showHelp();
+    process.exit(0);
+  }
+
+  if (command) {
     if(options.help) {
       console.info(HELP_COMMANDS[command]);
-      return;
+      process.exit(0);
     }
     scripts[command](options).then(() => {
       console.info(`"${command}" command run successfully.`);
       process.exit(0);
     }).catch((error) => {
-      console.error(error, `An error has occured while running transformation (${command}).`);
+      console.error(error, `An error has occured while running command (${command}).`);
       process.exit(1);
     });
   }
+
 })();
-
-
