@@ -28,6 +28,11 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 npm install dynamo-data-transform --save-dev
 ```
 - Add the tool to your serverless.yml
+Run:
+```bash
+npx serverless plugin install -n dynamo-data-transform
+```
+Or add manually to your serverless.yml:
 ```YML
 plugins:
   - dynamo-data-transform
@@ -50,7 +55,7 @@ Or with the shortcut
 ```bash
 ddt help
 ```
-### Interactive CLI
+### 💻 Interactive CLI
 After installing the npm package, run:
 ```bash
 dynamodt -i
@@ -187,7 +192,6 @@ const transformDown = async ({ ddb, isDryRun }) => {
 module.exports = {
   transformUp,
   transformDown,
-  // prepare, // pass this function only if you need preparation data for the transformation
   transformationNumber: 2,
 };
 ```
