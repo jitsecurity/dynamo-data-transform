@@ -32,7 +32,7 @@ const showHelp = () => {
   if (options.interactive) {
     const importJsx = require('import-jsx');
     importJsx('./Components/App');
-    process.exit(0);
+    return;
   }
 
   const [command] = options._;
