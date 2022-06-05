@@ -1,5 +1,9 @@
-# The safe data transformation process
+# Zero down time data transformation process
 The next section describes how the data transformation process looks like, and the order of each step.
+
+[Process Steps](#steps)
+[Troubleshooting](#troubleshooting)
+[Key Concepts](#key-concepts)
 ## Steps
 ### 1st Phase (Add New Resources)
 1. Update the table resources if needed \
@@ -39,7 +43,6 @@ Implement these functions:
 
 
 ### Key Concepts 
-First of all, keep in mind that our mission is to prevent downtime while executing data transformations.
 - Don't override resources/data
 - Your code should be able to work with the old version of the data and keep it updated.
 - Prefer multiple data transformations over complex one.

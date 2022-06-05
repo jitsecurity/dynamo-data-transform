@@ -21,6 +21,18 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 - Safe & Secure preparation data
 - Store preparation data in a private s3 bucket. [Prepare data for your data transformation](#usage-and-command-line-options)
 
+## Table of contents
+
+- [Quick Start](#quick-start)
+  - [Serverless plugin](#⚡-Serverless-plugin)
+  - [Standalone npm package](#standalone-npm-package)
+  - [Interactive CLI](#💻-Interactive-CLI)
+- [Creating your first data transformation](#creating-your-first-data-transformation)
+- [Usage and command-line options](#usage-and-command-line-options)
+- [What happens behind the scenes](#what-happens-behind-the-scenes)
+- [Examples](#examples)
+- [The data transformation process](https://github.com/jitsecurity/dynamo-data-transform/blob/main/docs/zero_downtime_data_transformation_process.md)
+
 ## Quick Start
 ### ⚡ Serverless plugin
 - Install
@@ -63,42 +75,35 @@ dynamodt -i
 ![cli gif](https://user-images.githubusercontent.com/35347793/172045910-d511e735-2d31-4713-bb64-5f55a900941c.gif)
 
 
-## Table of contents
 
-- [Quick Start](#quick-start)
-- [Usage and command-line options](#usage-and-command-line-options)
-- [What happens behind the scenes](#what-happens-behind-the-scenes)
-- [The data transformation process](#the-data-transformation-process)
-  - [Process Steps](#steps)
-  - [Key Concepts](#key-concepts)
-  - [Troubleshooting](#troubleshooting)
-  - [Examples](#examples)
-
-
-
-## Usage and command-line options
-
-List available commands:
-Serverless plugin:
+## Creating your first data transformation
+1. Intialize data-transformations folder
+Serverless (the plugin reads the table names from the serverless.yml file):
 ```bash
-sls dynamodt --help
+sls dynamodt init
 ```
-Standalone npm package:
+Standalone:
 ```bash
-dynamodt help
+ddt init --tableNames <table_names>
 ```
 
+Open the generated data transformation file 'v1_script-name.js' file and implement the following functions:
+  - transformUp: Executed when running `dynamodt up`
+  - transformDown: Executed when running `dynamodt down -t <table>`
+  - prepare (optional): Executed when running `dynamodt prepare -t <table> --tNumber <transformation_number>`
 
-To list all of the options for a specific command run:
-Serverless plugin:
+The function parameters:
+  - ddb: The DynamoDB Document client object see [DynamoDB Client](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb)
+  - isDryRun: Boolean indicating if --dry run supplied. You can use it to print/log the data instead of storing it.
+  - preparationData: if you stored the preparation data using `dynamodt prepare`, you can use it here.
+
+2. Run the data transformation
 ```bash
-sls dynamodt <command> --help
+dynamodt up
 ```
 
-## What happens behind the scenes
-- When a data transformation runs for the first time, a record in your table is created. This record is for tracking the executed transformations on a specific table.
 
-## Data Transformation Script Format (e.g v1_script.js)
+## Data Transformation Script Format
 ```js
 const { utils } = require('dynamo-data-transform')
 
@@ -128,9 +133,38 @@ module.exports = {
 ```
 
 
+
+## Usage and command-line options
+
+List available commands:
+Serverless plugin:
+```bash
+sls dynamodt --help
+```
+Standalone npm package:
+```bash
+dynamodt help
+```
+
+
+To list all of the options for a specific command run:
+Serverless plugin:
+```bash
+sls dynamodt <command> --help
+```
+
+Standalone npm package:
+```bash
+dynamodt <command> --help
+```
+
+## What happens behind the scenes
+- When a data transformation runs for the first time, a record in your table is created. This record is for tracking the executed transformations on a specific table.
+
+
+
 ## Examples
-Examples of data transformation code:
-https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack/data-transformations
+[Examples of data transformation code](https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack/data-transformations/UsersExample)
 
 
 ### Insert records
@@ -143,7 +177,7 @@ const { USERS_DATA } = require('../../usersData');
 const TABLE_NAME = 'UsersExample';
 
 /**
- * @param {DynamoDBDocumentClient} ddb - dynamo db document client https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-dynamodb
+ * @param {DynamoDBDocumentClient} ddb - dynamo db document client https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb
  * @param {boolean} isDryRun - true if this is a dry run
  */
 const transformUp = async ({ ddb, isDryRun }) => {
@@ -191,89 +225,5 @@ module.exports = {
 };
 ```
 
-### Add field using preparation data (s3 bucket)
-```js
-// Adding a new field "hasWikiPage"
-// "hasWikiPage" is a boolean field that is set to true if the item has a wiki page
-// It is calculated with a prepare function that fetches the wiki page status for each item
+For more examples of data transformation code, see the [examples](https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack/data-transformations/UsersExample) folder in the repository.
 
-const { utils } = require('dynamo-data-transform');
-
-const userAgentHeader = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
-};
-
-const fetch = (...args) => import('node-fetch').then(({ default: nodeFetch }) => nodeFetch(
-  ...args,
-  {
-    headers: userAgentHeader,
-  },
-));
-
-const TABLE_NAME = 'UsersExample';
-
-const transformUp = async ({ ddb, preparationData, isDryRun }) => {
-  const addHasWikiPage = (hasWikiDict) => (item) => {
-    const valueFromPreparation = hasWikiDict[`${item.PK}-${item.SK}`];
-    const updatedItem = valueFromPreparation ? {
-      ...item,
-      hasWikiPage: valueFromPreparation,
-    } : item;
-    return updatedItem;
-  };
-
-  return utils.transformItems(
-    ddb,
-    TABLE_NAME,
-    addHasWikiPage(JSON.parse(preparationData)),
-    isDryRun,
-  );
-};
-
-const transformDown = async ({ ddb, isDryRun }) => {
-  const removeHasWikiPage = (item) => {
-    const { hasWikiPage, ...oldItem } = item;
-    return oldItem;
-  };
-
-  return utils.transformItems(ddb, TABLE_NAME, removeHasWikiPage, isDryRun);
-};
-
-const prepare = async ({ ddb }) => {
-  let lastEvalKey;
-  let preparationData = {};
-
-  let scannedAllItems = false;
-
-  while (!scannedAllItems) {
-    const { Items, LastEvaluatedKey } = await utils.getItems(ddb, lastEvalKey, TABLE_NAME);
-    lastEvalKey = LastEvaluatedKey;
-
-    const currentPreparationData = await Promise.all(Items.map(async (item) => {
-      const wikiItemUrl = `https://en.wikipedia.org/wiki/${item.name}`;
-      const currWikiResponse = await fetch(wikiItemUrl);
-      return {
-        [`${item.PK}-${item.SK}`]: currWikiResponse.status === 200,
-      };
-    }));
-
-    preparationData = {
-      ...preparationData,
-      ...currentPreparationData.reduce((acc, item) => ({ ...acc, ...item }), {}),
-    };
-
-    scannedAllItems = !lastEvalKey;
-  }
-
-  return preparationData;
-};
-
-module.exports = {
-  transformUp,
-  transformDown,
-  prepare,
-  transformationNumber: 4,
-};
-```
-
-For more examples of data transformation code, see the examples folder in the repository.

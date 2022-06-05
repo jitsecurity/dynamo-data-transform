@@ -6,7 +6,7 @@ const { USERS_DATA } = require('../../usersData');
 const TABLE_NAME = 'UsersExample';
 
 /**
- * @param {DynamoDBDocumentClient} ddb - dynamo db document client https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-dynamodb
+ * @param {DynamoDBDocumentClient} ddb - dynamo db document client https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb
  * @param {boolean} isDryRun - true if this is a dry run
  */
 const transformUp = async ({ ddb, isDryRun }) => {

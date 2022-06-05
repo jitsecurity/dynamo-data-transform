@@ -3,9 +3,9 @@ const { utils } = require('dynamo-data-transform');
 const TABLE_NAME = '{{YOUR_TABLE_NAME}}';
 
 /**
- * @param {DynamoDBDocumentClient} ddb - dynamo db client of @aws-sdk https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-dynamodb
+ * @param {DynamoDBDocumentClient} ddb - dynamo db client of @aws-sdk https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-dynamodb
  * @param {boolean} isDryRun
- * @returns {{transformed: number}}
+ * @returns the number of transformed items { transformed: number }
  *
  */
 const transformUp = async ({ ddb, isDryRun }) => {
