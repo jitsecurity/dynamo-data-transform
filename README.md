@@ -26,7 +26,7 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 - [Quick Start](#quick-start)
   - [Serverless plugin](#⚡-Serverless-plugin)
   - [Standalone npm package](#standalone-npm-package)
-  - [Interactive CLI](#💻-Interactive-CLI)
+  - [Interactive CLI](#💻-interactive-CLI)
 - [Creating your first data transformation](#creating-your-first-data-transformation)
 - [Usage and command-line options](#usage-and-command-line-options)
 - [What happens behind the scenes](#what-happens-behind-the-scenes)
@@ -57,7 +57,7 @@ sls dynamodt --help
 ### Standalone npm package
 - Install the tool
 ```bash
-npm install -g dynamo-data-transform
+npm install -g dynamo-data-transform -s
 ```
 - Run the tool
 ```bash
