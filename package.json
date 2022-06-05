@@ -1,6 +1,6 @@
 {
   "name": "dynamo-data-transform",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DynamoDB Data Transformation Tool",
   "main": "./index.js",
   "repository": "https://github.com/jitsecurity/dynamo-data-transform",
@@ -20,6 +20,21 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
+  "keywords": [
+    "dynamodb",
+    "dynamodb data",
+    "dynamo",
+    "dynamo data",
+    "transform",
+    "transformation",
+    "dynamo transformations",
+    "dynamo transformer",
+    "dynamo migration",
+    "serverless",
+    "serverless plugin",
+    "serverless dynamo",
+    "sls dyanmo"
+  ],
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.82.0",
     "@aws-sdk/client-s3": "^3.94.0",
