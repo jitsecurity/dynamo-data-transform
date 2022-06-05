@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "dynamo-data-transform": "^0.1.1",
+    "dynamo-data-transform": "^0.1.2",
     "serverless": "^3.17.0",
     "serverless-dotenv-plugin": "~3.9.0",
     "serverless-localstack": "~0.4.35",
