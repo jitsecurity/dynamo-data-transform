@@ -60,12 +60,7 @@ After installing the npm package, run:
 ```bash
 dynamodt -i
 ```
-
-
-
-
-
-
+![cli gif](https://user-images.githubusercontent.com/35347793/172045910-d511e735-2d31-4713-bb64-5f55a900941c.gif)
 
 
 ## Table of contents
