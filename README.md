@@ -24,9 +24,9 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 ## Table of contents
 
 - [Quick Start](#quick-start)
-  - [Serverless plugin](#⚡-Serverless-plugin)
+  - [Serverless plugin](#-Serverless-plugin)
   - [Standalone npm package](#standalone-npm-package)
-  - [Interactive CLI](#💻-interactive-CLI)
+  - [Interactive CLI](#-interactive-cli)
 - [Creating your first data transformation](#creating-your-first-data-transformation)
 - [Usage and command-line options](#usage-and-command-line-options)
 - [What happens behind the scenes](#what-happens-behind-the-scenes)
