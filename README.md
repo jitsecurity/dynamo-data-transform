@@ -1,6 +1,4 @@
-![ddt_graphic1x](https://user-images.githubusercontent.com/101042972/171440725-b9e7bad8-11d8-4202-965a-96d1f5d9b2b1.jpg)
-
-
+![ddt_graphic1x_tl](https://user-images.githubusercontent.com/101042972/172161782-f4a3e15c-fdf2-42f1-a14d-434b109e7d2a.png)
 <p>
   <a href="https://www.jit.io/jit-open-source-gitleaks?utm_source=github&utm_medium=badge&utm_campaign=dynamoDataTransform&utm_id=oss">
     <img src="https://img.shields.io/badge/Secured%20by-Jit-B8287F?style=?style=plastic" /> 
