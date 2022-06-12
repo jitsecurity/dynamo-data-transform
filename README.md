@@ -29,9 +29,9 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 ## Table of contents
 
 - [Quick Start](#quick-start)
-  - [Serverless plugin](#-Serverless-plugin)
+  - [Serverless plugin](#serverless-plugin)
   - [Standalone npm package](#standalone-npm-package)
-  - [Interactive CLI](#-interactive-cli)
+  - [Interactive CLI](#interactive-cli)
 - [Creating your first data transformation](#creating-your-first-data-transformation)
 - [Usage and command-line options](#usage-and-command-line-options)
 - [What happens behind the scenes](#what-happens-behind-the-scenes)
@@ -39,7 +39,8 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 - [The data transformation process](https://github.com/jitsecurity/dynamo-data-transform/blob/main/docs/zero_downtime_data_transformation_process.md)
 
 ## Quick Start
-### ⚡ Serverless plugin
+### Serverless plugin
+⚡
 - Install
 ```bash
 npm install dynamo-data-transform --save-dev
@@ -72,7 +73,8 @@ Or with the shortcut
 ```bash
 ddt help
 ```
-### 💻 Interactive CLI
+### Interactive CLI
+💻
 After installing the npm package, run:
 ```bash
 dynamodt -i
