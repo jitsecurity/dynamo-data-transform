@@ -1,6 +1,6 @@
 {
   "name": "dynamo-data-transform",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "DynamoDB Data Transformation Tool",
   "main": "./index.js",
   "repository": "https://github.com/jitsecurity/dynamo-data-transform",
