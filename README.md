@@ -15,7 +15,7 @@
 Dynamo Data Transform is an easy to use data transformation tool for DynamoDB.
 
 It allows performing powerful data transformations using simple Javascript commands, without the risk of breaking your database.
-Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalone-npm-package) and even as an [interactive CLI](#interactive-cli), Dynamo Data Transform saves you time and keeps you safe with features like dry-running a data transformation and even rolling back your last trasnformation if needed.
+Available as a [Serverless plugin](#-serverless-plugin), [npm package](#standalone-npm-package) and even as an [interactive CLI](#-interactive-cli), Dynamo Data Transform saves you time and keeps you safe with features like dry-running a data transformation and even rolling back your last trasnformation if needed.
 
 **Features**
 
@@ -29,7 +29,7 @@ Available as a [Serverless plugin](#serverless-plugin), [npm package](#standalon
 ## Table of contents
 
 - [Quick Start](#quick-start)
-  - [Serverless plugin](#-Serverless-plugin)
+  - [Serverless plugin](#-serverless-plugin)
   - [Standalone npm package](#standalone-npm-package)
   - [Interactive CLI](#-interactive-cli)
 - [Creating your first data transformation](#creating-your-first-data-transformation)
