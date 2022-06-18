@@ -4,7 +4,7 @@
   "description": "DynamoDB Data Transformation Tool",
   "main": "./index.js",
   "repository": "https://github.com/jitsecurity/dynamo-data-transform",
-  "author": "Guy Braunstain <guy@jit.io>",
+  "author": "Guy Braunstain <guy.braunstain@jit.io>",
   "contributors": [
     "Guy Braunstain (https://github.com/Guy7B)"
   ],
@@ -25,6 +25,7 @@
     "dynamodb data",
     "dynamo",
     "dynamo data",
+    "dynamodt",
     "transform",
     "transformation",
     "dynamo transformations",
