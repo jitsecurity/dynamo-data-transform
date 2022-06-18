@@ -14,7 +14,7 @@ const transformUp = async ({ ddb, isDryRun }) => {
     const updatedItem = { ...item, newField: 'value' };
     return updatedItem;
   };
-  return utils.transformItems(ddb, isDryRun, TABLE_NAME, addNewFieldToItem);
+  return utils.transformItems(ddb, TABLE_NAME, addNewFieldToItem, isDryRun);
 };
 
 const transformDown = async ({ ddb, isDryRun }) => {
@@ -23,7 +23,7 @@ const transformDown = async ({ ddb, isDryRun }) => {
     const { newField, ...oldItem } = item;
     return oldItem;
   };
-  return utils.transformItems(ddb, isDryRun, TABLE_NAME, removeFieldFromItem);
+  return utils.transformItems(ddb, TABLE_NAME, removeFieldFromItem, isDryRun);
 };
 
 module.exports = {
@@ -35,6 +35,6 @@ module.exports = {
 
 /**
  * For more data transformation scripts examples, see:
- * https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples
+ * https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack
  *
  */

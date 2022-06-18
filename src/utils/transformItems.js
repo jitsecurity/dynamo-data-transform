@@ -13,8 +13,8 @@ const transformItems = async (ddb, tableName, transformer, isDryRun) => {
 
     const updatedItems = Items.map(transformer);
 
-    if (!isDryRun) {
-      await batchWriteItems(ddb, tableName, updatedItems);
+    if (!isDryRun && updatedItems.length > 0) {
+      if (updatedItems?.length) await batchWriteItems(ddb, tableName, updatedItems);
       transformedItemsKeys = transformedItemsKeys.concat(updatedItems.map((item) => `${item.PK}-${item.SK}`));
     } else {
       console.info(updatedItems, 'updatedItems');
