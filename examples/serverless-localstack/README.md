@@ -1,4 +1,4 @@
-# This repository shows the usage of the dynamo-data-transform package.
+## This repository shows the usage of the dynamo-data-transform package.
 
 ## Quick Start
 
@@ -69,7 +69,7 @@ history - `ddt history -t Users`
     ```
     Now lets prepare some data for the transformation. Run the same command as before but without --dry.
     ```bash
-    npx sls dynamodt prepare --table UsersExample --tNumber 4
+    npx sls dynamodt prepare --table UsersExample --tNumber 4  --stage local
     ```
     Let's run the pending transformation script, currently it is "v4_using_preparation_data.js"
     ```bash

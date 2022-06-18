@@ -3,7 +3,7 @@ const { DATA_TRANSFORMATIONS_FOLDER_NAME } = require('../config/constants');
 
 const createFolderIfNotExist = (folderPath) => {
   if (!fs.existsSync(folderPath)) {
-    console.info(`${folderPath} folder does not exist, creating it`);
+    console.info(`${folderPath} folder does not exist, creating...`);
     fs.mkdirSync(folderPath);
     return false;
   }

@@ -28,18 +28,18 @@ module.exports = {
     usage: 'Run data transformations',
     commands: {
       init: {
-        usage: `sls dynamodt init - ${COMMAND_DESCRIPTION.init}`,
+        usage: `sls dynamodt init --stage <stage> - ${COMMAND_DESCRIPTION.init}`,
         lifecycleEvents: ['init'],
       },
       up: {
-        usage: `sls dynamodt up - ${COMMAND_DESCRIPTION.up}`,
+        usage: `sls dynamodt up --stage <stage> - ${COMMAND_DESCRIPTION.up}`,
         lifecycleEvents: ['transform'],
         options: {
           dry: COMMAND_OPTIONS.dry,
         },
       },
       prepare: {
-        usage: `"sls dynamodt prepare --table <table> --tNumber <transformation_number>" - ${COMMAND_DESCRIPTION.prepare}`,
+        usage: `"sls dynamodt prepare --table <table> --tNumber <transformation_number> --stage <stage>" - ${COMMAND_DESCRIPTION.prepare}`,
         lifecycleEvents: ['prepare'],
         options: {
           tNumber: COMMAND_OPTIONS.tNumber,
@@ -48,7 +48,7 @@ module.exports = {
         },
       },
       down: {
-        usage: `sls dynamodt down --table <table> - ${COMMAND_DESCRIPTION.down}`,
+        usage: `sls dynamodt down --table <table> --stage <stage> - ${COMMAND_DESCRIPTION.down}`,
         lifecycleEvents: ['rollback'],
         options: {
           table: COMMAND_OPTIONS.table,
@@ -56,7 +56,7 @@ module.exports = {
         },
       },
       history: {
-        usage: `sls dynamodt history --table <table> -  ${COMMAND_DESCRIPTION.history}`,
+        usage: `sls dynamodt history --table <table> --stage <stage> -  ${COMMAND_DESCRIPTION.history}`,
         lifecycleEvents: ['history'],
         options: {
           table: COMMAND_OPTIONS.table,

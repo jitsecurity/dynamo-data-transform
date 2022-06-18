@@ -10,7 +10,7 @@
   </a>
 </p>
   
-  
+
 
 Dynamo Data Transform is an easy to use data transformation tool for DynamoDB.
 
@@ -85,7 +85,7 @@ dynamodt -i
 1. Intialize data-transformations folder
 Serverless (the plugin reads the table names from the serverless.yml file):
 ```bash
-sls dynamodt init
+sls dynamodt init --stage <stage>
 ```
 Standalone:
 ```bash
