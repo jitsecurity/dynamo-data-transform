@@ -7,6 +7,7 @@ const MAX_ITEMS_PER_BATCH = 25;
 const deleteItems = async (ddb, tableName, items, isDryRun) => {
   if (isDryRun) {
     console.info(`Dry run: would have deleted ${items.length} items from ${tableName}`, items);
+    return;
   }
 
   const batches = [];
