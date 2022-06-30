@@ -24,6 +24,8 @@ const parsedOptions = parseArgs(process.argv.slice(2),{
 const options = Object.entries(parsedOptions).reduce((acc, [key, value]) => {
   if (['tableNames','n'].includes(key)) {
     acc[key] = value.split(',');
+  } else {
+    acc[key] = value;
   }
   return acc;
 },{});
