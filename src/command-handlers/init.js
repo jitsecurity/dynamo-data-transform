@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { DATA_TRANSFORMATIONS_FOLDER_NAME } = require('../config/constants');
 
 const createFolderIfNotExist = (folderPath) => {
@@ -12,24 +13,20 @@ const createFolderIfNotExist = (folderPath) => {
 };
 
 const initHandler = async ({ tableNames }) => {
-  const baseTransformationsFolderPath = `${process.cwd()}/${DATA_TRANSFORMATIONS_FOLDER_NAME}`;
+  const baseTransformationsFolderPath = path.join(process.cwd(), DATA_TRANSFORMATIONS_FOLDER_NAME);
 
   createFolderIfNotExist(baseTransformationsFolderPath);
 
   tableNames?.forEach((tableName) => {
     const isExist = createFolderIfNotExist(`${baseTransformationsFolderPath}/${tableName}`);
     if (!isExist) {
-      const origin = `${__dirname}/../config/transformation-template-file.js`;
-      const destination = `${baseTransformationsFolderPath}/${tableName}/v1_script-name.js`;
+      const origin = path.join(__dirname, '../config/transformation-template-file.js');
+      const destination = path.join(baseTransformationsFolderPath, tableName, 'v1_script-name.js');
       const originFile = fs.readFileSync(origin, 'utf8');
       const destinationFile = originFile.replace(/{{YOUR_TABLE_NAME}}/g, tableName);
-      fs.writeFile(destination, destinationFile, 'utf8', (error) => {
-        if (error) {
-          console.error(`Could not write transformation template file for table ${tableName}`, error);
-          throw error;
-        }
-        console.info(`Transformation template v1.js file has created for ${tableName}`);
-      });
+
+      fs.writeFileSync(destination, destinationFile);
+      console.info(`Transformation template v1.js file has created for ${tableName}`);
     }
   });
 };

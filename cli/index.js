@@ -14,12 +14,19 @@ const commandAliases = {
   interactive: 'i',
 };
 
-const options = parseArgs(process.argv.slice(2),{
+const parsedOptions = parseArgs(process.argv.slice(2),{
   alias: commandAliases,
   boolean: ['dry', 'interactive', 'help'],
   string: ['table', 'tableNames'],
   number: ['tNumber'],
 });
+
+const options = Object.entries(parsedOptions).reduce((acc, [key, value]) => {
+  if (['tableNames','n'].includes(key)) {
+    acc[key] = value.split(',');
+  }
+  return acc;
+},{});
 
 const showHelp = () => {
   console.info('Available commands:');
