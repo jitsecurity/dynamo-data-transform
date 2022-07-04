@@ -2,10 +2,12 @@
 <p>
   <a href="https://www.jit.io/jit-open-source?utm_source=github&utm_medium=badge&utm_campaign=dynamoDataTransform&utm_id=oss">
     <img src="https://img.shields.io/badge/Secured%20by-Jit-B8287F?style=?style=plastic" /> 
+    
   <a href="https://www.serverless.com">
     <img src="http://public.serverless.com/badges/v3.svg">
   </a>
-  <a href="[https://www.serverless.com](https://www.npmjs.com/package/dynamo-data-transform)">
+    
+  <a href="https://www.npmjs.com/package/dynamo-data-transform">
     <img src="https://img.shields.io/npm/dw/dynamo-data-transform">
   </a>
 </p>
