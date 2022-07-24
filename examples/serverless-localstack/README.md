@@ -46,13 +46,13 @@ ddt -i
 
 
 
-## Exercises:
-1.  For understanding how to prepare data for transformation, take a look at "v4_using_preparation_data.js"
-    Move the file "v4_using_preparation_data.js" to the data-transformations folder.
+## Exercises
+1.  For understanding how to prepare data for transformation, take a look at [v4_using_preparation_data.js](https://github.com/jitsecurity/dynamo-data-transform/blob/main/examples/serverless-localstack/EXERCISE-prepare-data/v4_using_preparation_data.js).  
+    Move the file `v4_using_preparation_data.js` to the data-transformations folder.
     ```bash
     mv EXERCISE-prepare-data/v4_using_preparation_data.js data-transformations/UsersExample
     ```
-    Let's check the prepare script results
+    Let's check the `prepare` script results
     ```bash
     npx sls dynamodt prepare --table UsersExample --tNumber 4 --dry
     ```
@@ -66,7 +66,7 @@ ddt -i
         ...
     }
     ```
-    Now lets prepare some data for the transformation. Run the same command as before but without --dry.
+    Now lets prepare some data for the transformation. Run the same command as before but without `--dry`.
     ```bash
     npx sls dynamodt prepare --table UsersExample --tNumber 4  --stage local
     ```
@@ -74,15 +74,15 @@ ddt -i
     ```bash
     npx sls dynamodt up --stage local
     ```
-    Now open the dynamodb GUI and check the data.
+    Now open the dynamodb GUI and check the data.  
     http://localhost:8001/
     
 2.  Rollback the last transformation
     ```bash
     npx sls dynamodt down --stage local --table UsersExample --dry
     ```
-    Now you will see in the console that "hasWikiPage" field was removed from each item.
-    Lets rollback the last transformation for real.
+    Now you will see in the console that `hasWikiPage` field was removed from each item.  
+    Let's rollback the last transformation for real.
     ```bash
     npx sls dynamodt down --stage local --table UsersExample
     ```
