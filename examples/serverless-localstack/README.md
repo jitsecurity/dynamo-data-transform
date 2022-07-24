@@ -38,12 +38,11 @@ ddt -i
 ```
 
 #### Standalone npm package usage:
-init - `ddt init -tableNames "Users"`
-up - `ddt up`
-down - `ddt down -t Users`
-prepare - `ddt prepare -t Users --tNumber 3`
-history - `ddt history -t Users`
-```
+- init - `ddt init -tableNames "Users"`
+- up - `ddt up`
+- down - `ddt down -t Users`
+- prepare - `ddt prepare -t Users --tNumber 3`
+- history - `ddt history -t Users`
 
 
 
