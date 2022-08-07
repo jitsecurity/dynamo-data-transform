@@ -20,7 +20,7 @@ Implement these functions:
     1. `transformDown` - transform all of the table items to the previous shape.
     1. `prepare` - use this function whenever your data transformation relies on data from external resources.
 
-1. Export these functions and export the version of the current data transformation (set the sequence variable value. It should be the same number of the file name).
+1. Export these functions and export the version of the current data transformation (set the sequence variable value. It should be the same value as that of the file name).
 
 1. Preparing data from external resources for the data transformation can be done by using `sls dynamodt prepare`
 
