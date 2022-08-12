@@ -31,7 +31,7 @@ const executeDataTransformation = async (ddb, transformation, table, isDryRun) =
   }
 };
 
-const isGreaterThanLatesttransformationNumber = (fileName, latestDataTransformationNumber) => {
+const isGreaterThanLatestTransformationNumber = (fileName, latestDataTransformationNumber) => {
   const transformationFileNumber = parseTransformationFileNumber(fileName);
   return transformationFileNumber > latestDataTransformationNumber;
 };
@@ -42,10 +42,14 @@ const getScriptsToExecuteForTable = async (table, latestDataTransformationNumber
 
     const currentTransformationFiles = transformationFiles.filter((fileName) => {
       const isJsFile = path.extname(fileName) === TRANSFORMATION_SCRIPT_EXTENSION;
-      return isJsFile && isGreaterThanLatesttransformationNumber(fileName, latestDataTransformationNumber);
+      return isJsFile && isGreaterThanLatestTransformationNumber(fileName, latestDataTransformationNumber);
     });
 
-    const sortedTransformationFiles = currentTransformationFiles.sort();
+    const sortedTransformationFiles = currentTransformationFiles.sort((a, b) => {
+      const aNumber = parseTransformationFileNumber(a);
+      const bNumber = parseTransformationFileNumber(b);
+      return aNumber - bNumber;
+    });
 
     const scriptsToExecute = sortedTransformationFiles
       .map((fileName) => require(
