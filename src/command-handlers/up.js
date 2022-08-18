@@ -22,7 +22,13 @@ const executeDataTransformation = async (ddb, transformation, table, isDryRun) =
 
     const transformationResponse = await transformUp({ ddb, preparationData, isDryRun });
     if (!isDryRun) {
-      await syncTransformationRecord(ddb, transformationNumber, table, transformationResponse?.transformed);
+      if (transformationResponse) {
+        await syncTransformationRecord(ddb, transformationNumber, table, transformationResponse?.transformed);
+      } else {
+        console.error(`"return" statement is missing or invalid in your transformUp function.
+Please provide a transformation response "return { transformed: <number> }".
+See documentation for more details.`);
+      }
     } else {
       console.info("It's a dry run");
     }
