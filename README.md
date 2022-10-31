@@ -111,6 +111,7 @@ dynamodt up
 
 
 ## Data Transformation Script Format
+  Make sure your script name contains the transformation number, for example: v1_transformation_script
 ```js
 const { utils } = require('dynamo-data-transform')
 
