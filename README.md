@@ -235,3 +235,6 @@ module.exports = {
 
 For more examples of data transformation code, see the [examples](https://github.com/jitsecurity/dynamo-data-transform/tree/main/examples/serverless-localstack/data-transformations/UsersExample) folder in the repository.
 
+
+Read how to automate data-transformation process here:
+https://www.infoq.com/articles/dynamoDB-data-transformation-safety/
