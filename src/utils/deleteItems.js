@@ -29,7 +29,7 @@ const deleteItems = async (ddb, tableName, items, isDryRun) => {
 
     return { transformed: items.length };
   } catch (error) {
-    console.error(`An error has occurred in delete items for ${tableName}, ${error}`);
+    console.error(`An error has occurred in delete items for ${tableName}`, error);
     throw error;
   }
 };
