@@ -11,7 +11,7 @@ const transformItems = async (ddb, tableName, transformer, isDryRun) => {
     const { Items, LastEvaluatedKey } = await getItems(ddb, lastEvalKey, tableName);
     lastEvalKey = LastEvaluatedKey;
 
-    const updatedItems = Items.map(transformer);
+    const updatedItems = Items.map(transformer).filter(i => i !== undefined);
 
     if (!isDryRun && updatedItems.length > 0) {
       if (updatedItems?.length) await batchWriteItems(ddb, tableName, updatedItems);
