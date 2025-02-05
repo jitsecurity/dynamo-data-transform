@@ -21,7 +21,7 @@ const insertItems = async (ddb, tableName, items, isDryRun) => {
     const unprocessedItems = getUnprocessedItems(response);
 
     if (unprocessedItems.length > 0) {
-      console.error(`Failed to seed ${unprocessedItems.length} items to ${tableName}`, unprocessedItems);
+      console.error(`Failed to seed ${unprocessedItems.length} items to ${tableName}`, JSON.stringify(unprocessedItems, null, 2));
     }
 
     return { transformed: items.length };
